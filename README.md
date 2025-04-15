@@ -1,2 +1,2 @@
 # relay
-Building a relay from scratch
+Building a nostr relay from scratch
