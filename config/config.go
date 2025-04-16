@@ -10,6 +10,7 @@ import (
 	"go-simpler.org/env"
 
 	"relay.mleku.dev/chk"
+	"relay.mleku.dev/config/keyvalue"
 	"relay.mleku.dev/lol"
 	"relay.mleku.dev/version"
 )
@@ -38,8 +39,28 @@ func New() (c *C) {
 		return
 	}
 	if len(os.Args) == 2 && os.Args[1] == "help" {
-		fmt.Printf("environment variables that configure %s\n\n", c.AppName)
+		fmt.Printf("\nenvironment variables that configure %s\n\n", c.AppName)
 		env.Usage(c, os.Stdout, nil)
+		fmt.Printf(`
+commands:
+
+  - print this help message
+
+      %s help    
+
+  - print version info
+
+      %s version 
+
+  - print environment variables as a shell script that can be edited to set the configuration
+
+      %s env 
+
+`, os.Args[0], os.Args[0], os.Args[0])
+		os.Exit(0)
+	}
+	if len(os.Args) == 2 && os.Args[1] == "env" {
+		keyvalue.PrintEnv(*c, os.Stdout)
 		os.Exit(0)
 	}
 	// now we have the config, set up all the things here rather than somewhere unrelated.
