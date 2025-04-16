@@ -36,16 +36,15 @@ type T struct {
 	// MaxLimit is a default limit that applies to a query without a limit, to avoid sending out
 	// too many events to a client from a malformed or excessively broad filter.
 	MaxLimit int
-	// ActuallyDelete sets whether we actually delete or rewrite deleted entries with a modified
-	// deleted prefix value (8th bit set)
-	ActuallyDelete bool
-	// Flatten should be set to true to trigger a flatten at close... this is mainly
-	// triggered by running an import
+	// Flatten should be set to true to trigger a flatten at close... this is mainly triggered
+	// by running an import
 	Flatten bool
-	// UseCompact uses a compact encoding based on the canonical format (generate
-	// hash of it to get Id field with the signature in raw binary after.
+	// UseCompact uses a compact encoding based on the canonical format (generate hash of it to
+	// get Id field with the signature in raw binary after.
 	UseCompact bool
-	// Compression sets the compression to use, none/snappy/zstd
+	// Compression sets the compression to use, none/snappy/zstd. If zstd compression is enabled
+	// there is less benefit to UseCompact, and instead of having to re-marshal the event it can
+	// be directly delivered from the form returned from the database.
 	Compression string
 }
 
