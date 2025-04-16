@@ -1,25 +1,26 @@
-// Package publisher is a singleton package that keeps track of subscriptions in
-// both websockets and http SSE, including managing the authentication state of
-// a connection.
+// Package publisher is a top level router for publishing to registered publishers.
 package publish
 
 import (
 	"relay.mleku.dev/event"
 	"relay.mleku.dev/publish/publisher"
+	"relay.mleku.dev/typer"
 )
 
-// S is the control structure for the subscription management scheme.
-type S struct {
-	publisher.Publishers
+var registry publisher.Publishers
+
+func Register(p publisher.I) {
+	registry = append(registry, p)
 }
 
-// New creates a new publish.S.
-func New(p ...publisher.I) (s *S) {
-	s = &S{Publishers: p}
-	return
-}
+// S is the control structure for the subscription management scheme.
+type S struct{ publisher.Publishers }
 
 var _ publisher.I = &S{}
+
+// New creates a new publish.S using the registered publisher.Publishers that have added
+// themselves.
+func New() (s *S) { return &S{Publishers: registry} }
 
 func (s *S) Type() string { return "publish" }
 
@@ -30,7 +31,7 @@ func (s *S) Deliver(authRequired, publicReadable bool, ev *event.T) {
 	}
 }
 
-func (s *S) Receive(msg publisher.Typer) {
+func (s *S) Receive(msg typer.T) {
 	t := msg.Type()
 	for _, p := range s.Publishers {
 		if p.Type() == t {
