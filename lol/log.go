@@ -1,7 +1,7 @@
-// Package lol (log of location) is a simple logging library that prints a high
-// precision unix timestamp and the source location of a log print to make
-// tracing errors simpler. Includes a set of logging levels and the ability to
-// filter out higher log levels for a more quiet output.
+// Package lol (log of location) is a simple logging library that prints a high precision unix
+// timestamp and the source location of a log print to make tracing errors simpler. Includes a
+// set of logging levels and the ability to filter out higher log levels for a more quiet
+// output.
 package lol
 
 import (
@@ -38,8 +38,8 @@ var LevelNames = []string{
 }
 
 type (
-	// LevelPrinter defines a set of terminal printing primitives that output with
-	// extra data, time, log logLevelList, and code location
+	// LevelPrinter defines a set of terminal printing primitives that output with extra data,
+	// time, log logLevelList, and code location
 
 	// Ln prints lists of interfaces with spaces in between
 	Ln func(a ...interface{})
@@ -47,13 +47,13 @@ type (
 	F func(format string, a ...interface{})
 	// S prints a spew.Sdump for an enveloper slice
 	S func(a ...interface{})
-	// C accepts a function so that the extra computation can be avoided if it is
-	// not being viewed
+	// C accepts a function so that the extra computation can be avoided if it is not being
+	// viewed
 	C func(closure func() string)
 	// Chk is a shortcut for printing if there is an error, or returning true
 	Chk func(e error) bool
-	// Err is a pass-through function that uses fmt.Errorf to construct an error
-	// and returns the error after printing it to the log
+	// Err is a pass-through function that uses fmt.Errorf to construct an error and returns the
+	// error after printing it to the log
 	Err func(format string, a ...any) error
 
 	// LevelPrinter is the set of log printers on each log level.
@@ -87,8 +87,7 @@ var (
 	// sep is just a convenient shortcut for this very longwinded expression
 	sep = string(os.PathSeparator)
 
-	// writer can be swapped out for any io.*writer* that you want to use instead of
-	// stdout.
+	// writer can be swapped out for any io.*writer* that you want to use instead of stdout.
 	writer io.Writer = os.Stderr
 
 	// LevelSpecs specifies the id, string name and color-printing function
@@ -335,7 +334,7 @@ func init() {
 	//
 	// set the following environment variable in your ~/.bashrc
 	//
-	//   PROMPT_COMMAND='setcurrent'
+	//   export PROMPT_COMMAND='setcurrent'
 	//
 	// using the following regular expressions, replacing the path as necessary, and setting
 	// perhaps a different program than ide (this is for goland, i use an alias to the binary)

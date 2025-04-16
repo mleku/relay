@@ -1,3 +1,4 @@
+// Package log is a convenience shortcut to use shorter names to access the lol.Logger.
 package log
 
 import (

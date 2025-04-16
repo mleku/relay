@@ -14,13 +14,17 @@ import (
 	"relay.mleku.dev/version"
 )
 
+// C is the configuration for a relay. Note that it is absolutely minimal. More complex
+// configurations should generally be stored in the database, where APIs make them easy to
+// modify.
 type C struct {
-	AppName      string `env:"APP_NAME" default:"relay"`
+	AppName      string `env:"APP_NAME" default:"realy"`
 	Listen       string `env:"LISTEN" default:"0.0.0.0" usage:"network listen address"`
 	Port         int    `env:"PORT" default:"3334" usage:"port to listen on"` // PORT is used by heroku
 	Pprof        bool   `env:"PPROF" default:"false" usage:"enable pprof on 127.0.0.1:6060"`
 	MemLimit     int64  `env:"MEM_LIMIT" default:"250000000" usage:"set memory limit, default is 250Mb"`
 	LogLevel     string `env:"LOG_LEVEL" default:"trace" usage:"log level"`
+	DBLogLevel   string `env:"DB_LOG_LEVEL" default:"info" usage:"database log level"`
 	LogTimestamp bool   `env:"LOG_TIMESTAMP" default:"false" usage:"log timestamp"`
 }
 
