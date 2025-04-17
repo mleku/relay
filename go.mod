@@ -4,6 +4,7 @@ go 1.24.2
 
 require (
 	github.com/adrg/xdg v0.5.3
+	github.com/danielgtaylor/huma/v2 v2.32.0
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dgraph-io/badger/v4 v4.7.0
 	github.com/fatih/color v1.18.0

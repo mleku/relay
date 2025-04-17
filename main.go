@@ -17,9 +17,10 @@ import (
 	"relay.mleku.dev/interrupt"
 	"relay.mleku.dev/log"
 	"relay.mleku.dev/lol"
+	"relay.mleku.dev/openapi"
 	"relay.mleku.dev/ratel"
 	"relay.mleku.dev/relay"
-	"relay.mleku.dev/store"
+	"relay.mleku.dev/servemux"
 	"relay.mleku.dev/units"
 	"relay.mleku.dev/version"
 )
@@ -45,15 +46,18 @@ func main() {
 	if err = storage.Init(filepath.Join(xdg.DataHome, cfg.AppName)); chk.E(err) {
 		os.Exit(1)
 	}
-	s := relay.Server{
-		Ctx:             c,
-		Cancel:          cancel,
-		WG:              wg,
-		Address:         net.JoinHostPort(cfg.Listen, strconv.Itoa(cfg.Port)),
-		ConfigurationMx: &sync.Mutex{},
-		Configuration:   &store.Configuration{},
-		Store:           storage,
+	serveMux := servemux.New()
+	s := &relay.Server{
+		Name:     cfg.AppName,
+		Ctx:      c,
+		Cancel:   cancel,
+		WG:       wg,
+		Mux:      serveMux,
+		Address:  net.JoinHostPort(cfg.Listen, strconv.Itoa(cfg.Port)),
+		Store:    storage,
+		MaxLimit: ratel.DefaultMaxLimit,
 	}
+	openapi.New(s, cfg.AppName, version.V, version.Description, "/", serveMux)
 	interrupt.AddHandler(func() { s.Shutdown() })
 	if err = s.Start(); err != nil {
 		if errors.Is(err, httputil.ErrClosed) {

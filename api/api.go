@@ -7,6 +7,7 @@ import (
 
 	"relay.mleku.dev/chk"
 	"relay.mleku.dev/log"
+	"relay.mleku.dev/servemux"
 )
 
 type Header struct{ Key, Value string }
@@ -14,7 +15,7 @@ type Header struct{ Key, Value string }
 // Handler is an HTTP handler with a prescribed root path and net.Listener for handling HTTP
 // requests.
 type Handler struct {
-	http.ServeMux
+	*servemux.S
 	// Path is the root path for the Handler, the Router selects which handler to pass the request
 	// to from this.
 	Path string

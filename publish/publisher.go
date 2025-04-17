@@ -7,10 +7,10 @@ import (
 	"relay.mleku.dev/typer"
 )
 
-var registry publisher.Publishers
+var publishers publisher.Publishers
 
 func Register(p publisher.I) {
-	registry = append(registry, p)
+	publishers = append(publishers, p)
 }
 
 // S is the control structure for the subscription management scheme.
@@ -18,9 +18,7 @@ type S struct{ publisher.Publishers }
 
 var _ publisher.I = &S{}
 
-// New creates a new publish.S using the registered publisher.Publishers that have added
-// themselves.
-func New() (s *S) { return &S{Publishers: registry} }
+var P = &S{publishers}
 
 func (s *S) Type() string { return "publish" }
 
