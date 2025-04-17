@@ -58,7 +58,7 @@ func (fi SubscribeInput) ToFilter() (f *filter.T, err error) {
 func (x *Operations) RegisterSubscribe(api huma.API) {
 	name := "Subscribe"
 	description := "Subscribe for newly published events by author, kind or tags; empty also allowed, which just sends all incoming events - uses Server Sent Events format for compatibility with standard libraries."
-	path := "/subscribe"
+	path := x.path + "/subscribe"
 	scopes := []string{"user", "read"}
 	method := http.MethodPost
 	sse.Register(api, huma.Operation{

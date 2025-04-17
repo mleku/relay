@@ -21,7 +21,7 @@ type RescanOutput struct{}
 func (x *Operations) RegisterRescan(api huma.API) {
 	name := "Rescan"
 	description := "Rescan all events and rewrite their indexes (to enable new indexes on old events)"
-	path := "/rescan"
+	path := x.path + "/rescan"
 	scopes := []string{"admin"}
 	method := http.MethodGet
 	huma.Register(api, huma.Operation{

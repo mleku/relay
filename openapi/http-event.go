@@ -35,7 +35,7 @@ type EventOutput struct{ Body string }
 func (x *Operations) RegisterEvent(api huma.API) {
 	name := "Event"
 	description := "Submit an event"
-	path := "/event"
+	path := x.path + "/event"
 	scopes := []string{"user", "write"}
 	method := http.MethodPost
 	huma.Register(api, huma.Operation{

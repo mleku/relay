@@ -28,7 +28,7 @@ type ImportOutput struct{}
 func (x *Operations) RegisterImport(api huma.API) {
 	name := "Import"
 	description := "Import events from line structured JSON (jsonl)"
-	path := "/import"
+	path := x.path + "/import"
 	scopes := []string{"admin", "write"}
 	method := http.MethodPost
 	huma.Register(api, huma.Operation{

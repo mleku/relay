@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"relay.mleku.dev/chk"
 	"relay.mleku.dev/context"
 	"relay.mleku.dev/event"
 	"relay.mleku.dev/relay/interfaces"
@@ -22,12 +23,16 @@ func (s *Server) Storage() store.I { return s.Store }
 func (s *Server) Configuration() store.Configuration {
 	s.configurationMx.Lock()
 	defer s.configurationMx.Unlock()
-	return s.configuration
+	if s.configuration == nil {
+		return store.Configuration{}
+	}
+	return *s.configuration
 }
 
 func (s *Server) SetConfiguration(cfg *store.Configuration) {
 	s.configurationMx.Lock()
-	s.configuration = *cfg
+	s.configuration = cfg
+	chk.E(s.UpdateConfiguration())
 	s.configurationMx.Unlock()
 }
 
@@ -48,7 +53,7 @@ func (s *Server) AcceptEvent(
 func (s *Server) PublicReadable() bool {
 	s.configurationMx.Lock()
 	defer s.configurationMx.Unlock()
-	return s.configuration.AuthRequired
+	return s.configuration.PublicReadable
 }
 
 func (s *Server) Context() context.T { return s.Ctx }

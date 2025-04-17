@@ -14,6 +14,7 @@ import (
 	"relay.mleku.dev/kind"
 	"relay.mleku.dev/kinds"
 	"relay.mleku.dev/log"
+	"relay.mleku.dev/store"
 	"relay.mleku.dev/tag"
 )
 
@@ -21,6 +22,17 @@ func (s *Server) Init() {
 	var err error
 	s.configurationMx.Lock()
 	defer s.configurationMx.Unlock()
+	if err = s.UpdateConfiguration(); chk.E(err) {
+		return
+	}
+	if s.configuration == nil {
+		s.configuration = &store.Configuration{
+			BlockList:      nil,
+			Owners:         nil,
+			AuthRequired:   false,
+			PublicReadable: true,
+		}
+	}
 	for _, src := range s.configuration.Owners {
 		if len(src) < 1 {
 			continue
@@ -45,6 +57,7 @@ func (s *Server) Init() {
 		s.ZeroLists()
 		s.CheckOwnerLists(context.Bg())
 	}
+
 }
 
 func (s *Server) ZeroLists() {

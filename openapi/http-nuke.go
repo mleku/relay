@@ -27,7 +27,7 @@ type NukeOutput struct{}
 func (x *Operations) RegisterNuke(api huma.API) {
 	name := "Nuke"
 	description := "Nuke all events in the database"
-	path := "/nuke"
+	path := x.path + "/nuke"
 	scopes := []string{"admin", "write"}
 	method := http.MethodGet
 	huma.Register(api, huma.Operation{

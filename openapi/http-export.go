@@ -23,7 +23,7 @@ type ExportOutput struct{ RawBody []byte }
 func (x *Operations) RegisterExport(api huma.API) {
 	name := "Export"
 	description := "Export all events (only works with NIP-98/JWT capable client, will not work with UI)"
-	path := "/export"
+	path := x.path + "/export"
 	scopes := []string{"admin", "read"}
 	method := http.MethodGet
 	huma.Register(api, huma.Operation{

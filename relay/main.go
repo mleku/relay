@@ -11,6 +11,7 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/rs/cors"
 
+	"relay.mleku.dev/api"
 	"relay.mleku.dev/chk"
 	"relay.mleku.dev/context"
 	"relay.mleku.dev/log"
@@ -35,7 +36,7 @@ type Server struct {
 	MaxLimit int
 
 	configurationMx sync.Mutex
-	configuration   store.Configuration
+	configuration   *store.Configuration
 
 	sync.Mutex
 	admins []signer.I
@@ -64,7 +65,7 @@ func (s *Server) Start() (err error) {
 		return
 	}
 	s.HTTPServer = &http.Server{
-		Handler:           cors.Default().Handler(s),
+		Handler:           cors.Default().Handler(api.Handle),
 		Addr:              s.Address,
 		ReadHeaderTimeout: 7 * time.Second,
 		IdleTimeout:       28 * time.Second,

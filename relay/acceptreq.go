@@ -13,7 +13,7 @@ import (
 func (s *Server) AcceptReq(c context.T, hr *http.Request, id []byte,
 	ff *filters.T, authedPubkey []byte) (allowed *filters.T, ok bool, modified bool) {
 
-	if s.PublicReadable() { // && len(s.owners) == 0 {
+	if s.PublicReadable() {
 		allowed = ff
 		ok = true
 		return

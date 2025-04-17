@@ -86,7 +86,7 @@ type FilterOutput struct {
 func (x *Operations) RegisterFilter(api huma.API) {
 	name := "Filter"
 	description := "Search for events and receive a sorted list of event Ids (one of authors, kinds or tags must be present)"
-	path := "/filter"
+	path := x.path + "/filter"
 	scopes := []string{"user", "read"}
 	method := http.MethodPost
 	huma.Register(api, huma.Operation{
@@ -131,7 +131,7 @@ func (x *Operations) RegisterFilter(api huma.API) {
 		allowed, accepted, modified = x.Server.AcceptReq(x.Context(), r, nil,
 			filters.New(f), pubkey)
 		if !accepted {
-			err = huma.Error401Unauthorized("auth to get access for this filter")
+			err = huma.Error401Unauthorized("Auth to get access for this filter")
 			return
 		} else if modified {
 			log.D.F("filter modified %s", allowed.F[0])

@@ -19,7 +19,7 @@ type ShutdownOutput struct{}
 func (x *Operations) RegisterShutdown(api huma.API) {
 	name := "Shutdown"
 	description := "Shutdown relay"
-	path := "/shutdown"
+	path := x.path + "/shutdown"
 	scopes := []string{"admin"}
 	method := http.MethodGet
 	huma.Register(api, huma.Operation{

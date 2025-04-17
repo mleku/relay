@@ -24,7 +24,8 @@ func ExposeMiddleware(ctx huma.Context, next func(huma.Context)) {
 func NewHuma(router *servemux.S, name, version, description string) (api huma.API) {
 	config := huma.DefaultConfig(name, version)
 	config.Info.Description = description
-	// config.DocsPath = "/"
+	config.DocsPath = ""
+	config.OpenAPIPath = "/api/openapi"
 	router.HandleFunc("/api", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
 		w.Write([]byte(`<!DOCTYPE html>
@@ -39,7 +40,7 @@ func NewHuma(router *servemux.S, name, version, description string) (api huma.AP
   <body>
     <script
       id="api-reference"
-      data-url="/openapi.json"></script>
+      data-url="/api/openapi.json"></script>
     <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
   </body>
 </html>`))

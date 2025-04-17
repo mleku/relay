@@ -15,7 +15,7 @@ type Operations struct {
 }
 
 // New creates a new openapi.Operations and registers its methods.
-func New(s interfaces.Server, name, version, description, path string,
+func New(s interfaces.Server, name, version, description string, path string,
 	sm *servemux.S) (handler *api.Handler) {
 
 	handler = &api.Handler{Path: path, S: sm}

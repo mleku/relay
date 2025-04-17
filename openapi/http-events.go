@@ -28,7 +28,7 @@ type EventsInput struct {
 func (x *Operations) RegisterEvents(api huma.API) {
 	name := "Events"
 	description := "Returns the full events from a list of event Ids as a line structured JSON. Auth required to fetch more than 1000 events, and if not enabled, 1000 is the limit."
-	path := "/events"
+	path := x.path + "/events"
 	scopes := []string{"user", "read"}
 	method := http.MethodPost
 	huma.Register(api, huma.Operation{

@@ -27,9 +27,9 @@ type RelayOutput struct{ Body string }
 
 // RegisterRelay is the implementatino of the HTTP API Relay method.
 func (x *Operations) RegisterRelay(api huma.API) {
-	name := "relay"
+	name := "Relay"
 	description := "relay an event, don't store it"
-	path := "/relay"
+	path := x.path + "/relay"
 	scopes := []string{"user"}
 	method := http.MethodPost
 	huma.Register(api, huma.Operation{

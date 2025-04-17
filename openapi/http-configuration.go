@@ -33,7 +33,7 @@ type ConfigurationGetOutput struct {
 func (x *Operations) RegisterConfigurationSet(api huma.API) {
 	name := "ConfigurationSet"
 	description := "Set the configuration"
-	path := "/configuration/set"
+	path := x.path + "/configuration/set"
 	scopes := []string{"admin", "write"}
 	method := http.MethodPost
 	huma.Register(api, huma.Operation{
@@ -61,6 +61,11 @@ func (x *Operations) RegisterConfigurationSet(api huma.API) {
 				return
 			}
 			x.SetConfiguration(input.Body)
+			var cfg *store.Configuration
+			if cfg, err = c.GetConfiguration(); chk.E(err) {
+				return
+			}
+			x.Server.SetConfiguration(cfg)
 		}
 		return
 	})
@@ -70,7 +75,7 @@ func (x *Operations) RegisterConfigurationSet(api huma.API) {
 func (x *Operations) RegisterConfigurationGet(api huma.API) {
 	name := "ConfigurationGet"
 	description := "Fetch the current configuration"
-	path := "/configuration/get"
+	path := x.path + "/configuration/get"
 	scopes := []string{"admin", "read"}
 	method := http.MethodGet
 	huma.Register(api, huma.Operation{
