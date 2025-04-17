@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"relay.mleku.dev/chk"
+	"relay.mleku.dev/log"
 )
 
 type Header struct{ Key, Value string }
@@ -55,5 +56,6 @@ func (a *A) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	log.D.F("handler for path %s not found", r.URL.Path)
 	w.WriteHeader(http.StatusNotFound)
 }

@@ -137,7 +137,7 @@ var Main = &Logger{}
 
 func init() {
 	// Main = &Logger{}
-	Main.Log, Main.Check, Main.Errorf = New(os.Stderr)
+	Main.Log, Main.Check, Main.Errorf = New(os.Stderr, 2)
 	SetLoggers(Info)
 }
 
@@ -181,7 +181,7 @@ func JoinStrings(a ...any) (s string) {
 var msgCol = color.New(color.FgBlue).Sprint
 
 // GetPrinter returns a full logger that writes to the provided io.Writer.
-func GetPrinter(l int32, writer io.Writer) LevelPrinter {
+func GetPrinter(l int32, writer io.Writer, skip int) LevelPrinter {
 	return LevelPrinter{
 		Ln: func(a ...interface{}) {
 			if Level.Load() < l {
@@ -192,7 +192,7 @@ func GetPrinter(l int32, writer io.Writer) LevelPrinter {
 				msgCol(TimeStamper()),
 				LevelSpecs[l].Colorizer(LevelSpecs[l].Name),
 				JoinStrings(a...),
-				msgCol(GetLoc(2)),
+				msgCol(GetLoc(skip)),
 			)
 		},
 		F: func(format string, a ...interface{}) {
@@ -204,7 +204,7 @@ func GetPrinter(l int32, writer io.Writer) LevelPrinter {
 				msgCol(TimeStamper()),
 				LevelSpecs[l].Colorizer(LevelSpecs[l].Name),
 				fmt.Sprintf(format, a...),
-				msgCol(GetLoc(2)),
+				msgCol(GetLoc(skip)),
 			)
 		},
 		S: func(a ...interface{}) {
@@ -216,7 +216,7 @@ func GetPrinter(l int32, writer io.Writer) LevelPrinter {
 				msgCol(TimeStamper()),
 				LevelSpecs[l].Colorizer(LevelSpecs[l].Name),
 				spew.Sdump(a...),
-				msgCol(GetLoc(2)),
+				msgCol(GetLoc(skip)),
 			)
 		},
 		C: func(closure func() string) {
@@ -228,7 +228,7 @@ func GetPrinter(l int32, writer io.Writer) LevelPrinter {
 				msgCol(TimeStamper()),
 				LevelSpecs[l].Colorizer(LevelSpecs[l].Name),
 				closure(),
-				msgCol(GetLoc(2)),
+				msgCol(GetLoc(skip)),
 			)
 		},
 		Chk: func(e error) bool {
@@ -241,7 +241,7 @@ func GetPrinter(l int32, writer io.Writer) LevelPrinter {
 					msgCol(TimeStamper()),
 					LevelSpecs[l].Colorizer(LevelSpecs[l].Name),
 					e.Error(),
-					msgCol(GetLoc(2)),
+					msgCol(GetLoc(skip)),
 				)
 				return true
 			}
@@ -254,7 +254,7 @@ func GetPrinter(l int32, writer io.Writer) LevelPrinter {
 					msgCol(TimeStamper()),
 					LevelSpecs[l].Colorizer(LevelSpecs[l].Name, " "),
 					fmt.Sprintf(format, a...),
-					msgCol(GetLoc(2)),
+					msgCol(GetLoc(skip)),
 				)
 			}
 			return fmt.Errorf(format, a...)
@@ -275,14 +275,14 @@ func GetNullPrinter() LevelPrinter {
 }
 
 // New creates a new logger with all the levels and things.
-func New(writer io.Writer) (l *Log, c *Check, errorf *Errorf) {
+func New(writer io.Writer, skip int) (l *Log, c *Check, errorf *Errorf) {
 	l = &Log{
-		T: GetPrinter(Trace, writer),
-		D: GetPrinter(Debug, writer),
-		I: GetPrinter(Info, writer),
-		W: GetPrinter(Warn, writer),
-		E: GetPrinter(Error, writer),
-		F: GetPrinter(Fatal, writer),
+		T: GetPrinter(Trace, writer, skip),
+		D: GetPrinter(Debug, writer, skip),
+		I: GetPrinter(Info, writer, skip),
+		W: GetPrinter(Warn, writer, skip),
+		E: GetPrinter(Error, writer, skip),
+		F: GetPrinter(Fatal, writer, skip),
 	}
 	c = &Check{
 		F: l.F.Chk,
@@ -355,7 +355,14 @@ func init() {
 // GetLoc returns the code location of the caller.
 func GetLoc(skip int) (output string) {
 	_, file, line, _ := runtime.Caller(skip)
-	s := strings.Split(file, prefix)
-	output = fmt.Sprintf("%s:%d", s[1], line)
+	var split []string
+	var s string
+	if strings.Contains(file, "pkg/mod/") {
+		s = file
+	} else {
+		split = strings.Split(file, prefix)
+		s = split[1]
+	}
+	output = fmt.Sprintf("%s:%d", s, line)
 	return
 }

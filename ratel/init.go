@@ -31,7 +31,7 @@ func (r *T) Init(path string) (err error) {
 	case "zstd":
 		opts.Compression = options.ZSTD
 	}
-	r.Logger = NewLogger(r.InitLogLevel, r.dataDir)
+	r.Logger = NewLogger(r.InitLogLevel, "RATEL")
 	opts.Logger = r.Logger
 	if r.DB, err = badger.Open(opts); chk.E(err) {
 		return err

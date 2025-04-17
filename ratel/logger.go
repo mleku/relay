@@ -2,9 +2,11 @@ package ratel
 
 import (
 	"fmt"
-	"runtime"
+	"os"
 	"strings"
 	"sync/atomic"
+
+	"github.com/fatih/color"
 
 	"relay.mleku.dev/log"
 	"relay.mleku.dev/lol"
@@ -13,7 +15,8 @@ import (
 // NewLogger creates a new badger logger.
 func NewLogger(logLevel int32, label string) (l *logger) {
 	log.T.Ln("getting logger for", label)
-	l = &logger{Label: label}
+	l = &logger{Label: color.New(color.Bold).Sprint(label)}
+	l.Log, _, _ = lol.New(os.Stderr, 4)
 	l.Level.Store(logLevel)
 	return
 }
@@ -21,6 +24,7 @@ func NewLogger(logLevel int32, label string) (l *logger) {
 type logger struct {
 	Level atomic.Int32
 	Label string
+	*lol.Log
 }
 
 // SetLogLevel atomically adjusts the log level to the given log level code.
@@ -33,8 +37,7 @@ func (l *logger) Errorf(s string, i ...interface{}) {
 	if l.Level.Load() >= lol.Error {
 		s = l.Label + ": " + s
 		txt := fmt.Sprintf(s, i...)
-		_, file, line, _ := runtime.Caller(2)
-		log.E.F("%s\n%s:%d", strings.TrimSpace(txt), file, line)
+		l.Log.E.Ln(strings.TrimSpace(txt))
 	}
 }
 
@@ -43,8 +46,7 @@ func (l *logger) Warningf(s string, i ...interface{}) {
 	if l.Level.Load() >= lol.Warn {
 		s = l.Label + ": " + s
 		txt := fmt.Sprintf(s, i...)
-		_, file, line, _ := runtime.Caller(2)
-		log.W.F("%s\n%s:%d", strings.TrimSpace(txt), file, line)
+		l.Log.W.F(strings.TrimSpace(txt))
 	}
 }
 
@@ -52,9 +54,9 @@ func (l *logger) Warningf(s string, i ...interface{}) {
 func (l *logger) Infof(s string, i ...interface{}) {
 	if l.Level.Load() >= lol.Debug {
 		s = l.Label + ": " + s
+		fmt.Println(s)
 		txt := fmt.Sprintf(s, i...)
-		_, file, line, _ := runtime.Caller(2)
-		log.I.F("%s\n%s:%d", strings.TrimSpace(txt), file, line)
+		l.Log.I.F(strings.TrimSpace(txt))
 	}
 }
 
@@ -63,7 +65,6 @@ func (l *logger) Debugf(s string, i ...interface{}) {
 	if l.Level.Load() >= lol.Trace {
 		s = l.Label + ": " + s
 		txt := fmt.Sprintf(s, i...)
-		_, file, line, _ := runtime.Caller(2)
-		log.D.F("%s\n%s:%d", strings.TrimSpace(txt), file, line)
+		l.Log.D.F(strings.TrimSpace(txt))
 	}
 }

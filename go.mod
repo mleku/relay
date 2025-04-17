@@ -3,12 +3,14 @@ module relay.mleku.dev
 go 1.24.2
 
 require (
+	github.com/adrg/xdg v0.5.3
 	github.com/davecgh/go-spew v1.1.1
 	github.com/dgraph-io/badger/v4 v4.7.0
 	github.com/fatih/color v1.18.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
 	github.com/klauspost/cpuid/v2 v2.2.10
 	github.com/pkg/profile v1.7.0
+	github.com/rs/cors v1.11.1
 	github.com/stretchr/testify v1.10.0
 	github.com/templexxx/xhex v0.0.0-20200614015412-aed53437177b
 	go-simpler.org/env v0.12.0
