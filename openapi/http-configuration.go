@@ -5,8 +5,10 @@ import (
 
 	"github.com/danielgtaylor/huma/v2"
 
+	"relay.mleku.dev/bech32encoding"
 	"relay.mleku.dev/chk"
 	"relay.mleku.dev/context"
+	"relay.mleku.dev/hex"
 	"relay.mleku.dev/log"
 	"relay.mleku.dev/relay/helpers"
 	"relay.mleku.dev/store"
@@ -45,22 +47,42 @@ func (x *Operations) RegisterConfigurationSet(api huma.API) {
 		Description: helpers.GenerateDescription(description, scopes),
 		Security:    []map[string][]string{{"auth": scopes}},
 	}, func(ctx context.T, input *ConfigurationSetInput) (wgh *struct{}, err error) {
-		log.I.S(input)
 		r := ctx.Value("http-request").(*http.Request)
-		// w := ctx.Value("http-response").(http.ResponseWriter)
-		// rr := GetRemoteFromReq(r)
 		authed, _ := x.AdminAuth(r)
 		if !authed {
-			// pubkey = ev.Pubkey
-			err = huma.Error401Unauthorized("authorization required")
-			return
+			log.I.F("checking first time password %s %s %v",
+				input.Auth, x.Configuration().FirstTime,
+				input.Auth != x.Configuration().FirstTime)
+			if input.Auth != x.Configuration().FirstTime {
+				err = huma.Error401Unauthorized("authorization required")
+				return
+			} else {
+				var found bool
+				for _, a := range input.Body.Admins {
+					if len(a) < 1 {
+						continue
+					}
+					dst := make([]byte, len(a)/2)
+					if _, err = hex.DecBytes(dst, []byte(a)); chk.E(err) {
+						if dst, err = bech32encoding.NpubToBytes([]byte(a)); chk.E(err) {
+							continue
+						}
+					}
+					log.T.S(dst)
+					found = true
+				}
+				if !found {
+					err = huma.Error401Unauthorized("at least one valid admin pubkey must be set")
+					return
+				}
+			}
 		}
 		sto := x.Storage()
 		if c, ok := sto.(store.Configurationer); ok {
+			x.SetConfiguration(input.Body)
 			if err = c.SetConfiguration(input.Body); chk.E(err) {
 				return
 			}
-			x.SetConfiguration(input.Body)
 			var cfg *store.Configuration
 			if cfg, err = c.GetConfiguration(); chk.E(err) {
 				return

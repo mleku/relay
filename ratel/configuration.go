@@ -6,7 +6,6 @@ import (
 	"github.com/dgraph-io/badger/v4"
 
 	"relay.mleku.dev/chk"
-	"relay.mleku.dev/log"
 	"relay.mleku.dev/ratel/prefixes"
 	"relay.mleku.dev/store"
 )
@@ -17,7 +16,6 @@ func (r *T) SetConfiguration(c *store.Configuration) (err error) {
 	if b, err = json.Marshal(c); chk.E(err) {
 		return
 	}
-	log.I.F("%s", b)
 	err = r.Update(func(txn *badger.Txn) (err error) {
 		if err = txn.Set(prefixes.Configuration.Key(), b); chk.E(err) {
 			return

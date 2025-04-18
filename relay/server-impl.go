@@ -12,8 +12,7 @@ import (
 )
 
 func (s *Server) AdminAuth(r *http.Request,
-	tolerance ...time.Duration) (authed bool,
-	pubkey []byte) {
+	tolerance ...time.Duration) (authed bool, pubkey []byte) {
 
 	return s.adminAuth(r, tolerance...)
 }

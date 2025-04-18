@@ -56,14 +56,17 @@ func (x *Operations) RegisterNuke(api huma.API) {
 		log.I.F("database nuke request from %s pubkey %0x",
 			rr, pubkey)
 		sto := x.Storage()
+		log.I.F("nuking")
 		if nuke, ok := sto.(store.Nukener); ok {
-			log.I.F("rescanning")
+			log.I.F("nuking")
 			if err = nuke.Nuke(); chk.E(err) {
 				if strings.HasPrefix(err.Error(), "Value log GC attempt") {
 					err = nil
 				}
 				return
 			}
+		} else {
+			log.I.F("nuking failed")
 		}
 		return
 	})

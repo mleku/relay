@@ -2,6 +2,7 @@ package relay
 
 import (
 	"bytes"
+	"crypto/rand"
 	"fmt"
 	"strings"
 
@@ -18,6 +19,16 @@ import (
 	"relay.mleku.dev/tag"
 )
 
+func getFirstTime() (s string) {
+	b := make([]byte, 32)
+	var err error
+	if _, err = rand.Read(b); chk.E(err) {
+		panic(err)
+	}
+	s = fmt.Sprintf("%x", b)
+	return
+}
+
 func (s *Server) Init() {
 	var err error
 	s.configurationMx.Lock()
@@ -27,11 +38,16 @@ func (s *Server) Init() {
 	}
 	if s.configuration == nil {
 		s.configuration = &store.Configuration{
+			FirstTime:      getFirstTime(),
 			BlockList:      nil,
 			Owners:         nil,
+			Admins:         nil,
 			AuthRequired:   false,
 			PublicReadable: true,
 		}
+		log.W.F(`first time configuration password: %s
+    use with Authorization header to set at least 1 Admin`,
+			s.configuration.FirstTime)
 	}
 	for _, src := range s.configuration.Owners {
 		if len(src) < 1 {

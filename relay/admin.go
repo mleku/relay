@@ -14,11 +14,12 @@ func (s *Server) UpdateConfiguration() (err error) {
 	if c, ok := s.Store.(store.Configurationer); ok {
 		var cfg *store.Configuration
 		if cfg, err = c.GetConfiguration(); chk.E(err) {
+			err = nil
 			return
 		}
+		s.configuration = cfg
 		// first update the admins
 		var administrators []signer.I
-		log.I.S(cfg.Admins)
 		for _, src := range cfg.Admins {
 			if len(src) < 1 {
 				continue
@@ -29,7 +30,6 @@ func (s *Server) UpdateConfiguration() (err error) {
 					continue
 				}
 			}
-			log.T.S(dst)
 			sign := &p256k.Signer{}
 			if err = sign.InitPub(dst); chk.E(err) {
 				return
@@ -37,8 +37,10 @@ func (s *Server) UpdateConfiguration() (err error) {
 			administrators = append(administrators, sign)
 			log.I.F("administrator pubkey: %0x", sign.Pub())
 		}
-		log.I.F("administrators: %v", administrators)
 		s.admins = administrators
+		if err = c.SetConfiguration(cfg); chk.E(err) {
+			return
+		}
 	}
 	return
 }

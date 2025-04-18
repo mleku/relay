@@ -16,7 +16,6 @@ import (
 func (s *Server) adminAuth(r *http.Request,
 	tolerance ...time.Duration) (authed bool, pubkey []byte) {
 	if len(s.admins) == 0 {
-		authed = true
 		return
 	}
 	var valid bool
