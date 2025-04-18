@@ -106,8 +106,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s *Server) Shutdown() {
 	log.W.Ln("shutting down relay")
 	s.Cancel()
-	log.W.Ln("waiting for current operations to stop")
-	s.WG.Wait()
 	log.W.Ln("closing event store")
 	chk.E(s.Store.Close())
 	log.W.Ln("shutting down relay listener")
