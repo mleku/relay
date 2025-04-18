@@ -47,6 +47,10 @@ func (x *Operations) RegisterEvent(api huma.API) {
 		Description: helpers.GenerateDescription(description, scopes),
 		Security:    []map[string][]string{{"auth": scopes}},
 	}, func(ctx context.T, input *EventInput) (output *EventOutput, err error) {
+		if !x.Server.Configured() {
+			err = huma.Error404NotFound("server is not configured")
+			return
+		}
 		r := ctx.Value("http-request").(*http.Request)
 		// w := ctx.Value("http-response").(http.ResponseWriter)
 		rr := helpers.GetRemoteFromReq(r)

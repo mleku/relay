@@ -41,6 +41,10 @@ func (x *Operations) RegisterEvents(api huma.API) {
 		Security:      []map[string][]string{{"auth": scopes}},
 		DefaultStatus: 204,
 	}, func(ctx context.T, input *EventsInput) (output *huma.StreamResponse, err error) {
+		if !x.Server.Configured() {
+			err = huma.Error404NotFound("server is not configured")
+			return
+		}
 		// log.I.S(input)
 		if len(input.Body) == 10000 {
 			err = huma.Error400BadRequest(

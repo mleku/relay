@@ -40,6 +40,10 @@ func (x *Operations) RegisterNuke(api huma.API) {
 		Security:      []map[string][]string{{"auth": scopes}},
 		DefaultStatus: 204,
 	}, func(ctx context.T, input *NukeInput) (wgh *NukeOutput, err error) {
+		if !x.Server.Configured() {
+			err = huma.Error404NotFound("server is not configured")
+			return
+		}
 		r := ctx.Value("http-request").(*http.Request)
 		// w := ctx.Value("http-response").(http.ResponseWriter)
 		rr := helpers.GetRemoteFromReq(r)

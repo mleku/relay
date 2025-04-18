@@ -29,6 +29,8 @@ func getFirstTime() (s string) {
 	return
 }
 
+func (s *Server) Configured() bool { return s.configured }
+
 func (s *Server) Init() {
 	var err error
 	s.configurationMx.Lock()
@@ -48,6 +50,8 @@ func (s *Server) Init() {
 		log.W.F(`first time configuration password: %s
     use with Authorization header to set at least 1 Admin`,
 			s.configuration.FirstTime)
+	} else {
+		s.configured = true
 	}
 	for _, src := range s.configuration.Owners {
 		if len(src) < 1 {

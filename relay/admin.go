@@ -18,6 +18,7 @@ func (s *Server) UpdateConfiguration() (err error) {
 			err = nil
 			return
 		}
+		log.I.F("setting configuration")
 		s.configuration = cfg
 		// first update the admins
 		var administrators []signer.I

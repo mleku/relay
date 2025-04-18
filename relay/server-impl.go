@@ -24,6 +24,7 @@ func (s *Server) Configuration() config.C {
 	s.configurationMx.Lock()
 	defer s.configurationMx.Unlock()
 	if s.configuration == nil {
+		s.configured = false
 		return config.C{}
 	}
 	return *s.configuration
@@ -32,6 +33,7 @@ func (s *Server) Configuration() config.C {
 func (s *Server) SetConfiguration(cfg *config.C) {
 	s.configurationMx.Lock()
 	s.configuration = cfg
+	s.configured = true
 	chk.E(s.UpdateConfiguration())
 	s.configurationMx.Unlock()
 }

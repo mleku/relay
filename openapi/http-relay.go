@@ -41,6 +41,10 @@ func (x *Operations) RegisterRelay(api huma.API) {
 		Description: helpers.GenerateDescription(description, scopes),
 		Security:    []map[string][]string{{"auth": scopes}},
 	}, func(ctx context.T, input *RelayInput) (output *RelayOutput, err error) {
+		if !x.Server.Configured() {
+			err = huma.Error404NotFound("server is not configured")
+			return
+		}
 		log.I.S(input)
 		r := ctx.Value("http-request").(*http.Request)
 		rr := helpers.GetRemoteFromReq(r)

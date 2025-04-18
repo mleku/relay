@@ -33,8 +33,9 @@ type Server struct {
 	HTTPServer *http.Server
 	Mux        *servemux.S
 	huma.API
-	Store    store.I
-	MaxLimit int
+	Store      store.I
+	MaxLimit   int
+	configured bool
 
 	configurationMx sync.Mutex
 	configuration   *config.C

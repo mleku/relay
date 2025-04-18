@@ -13,6 +13,7 @@ import (
 	"relay.mleku.dev/envelopes/authenvelope"
 	"relay.mleku.dev/log"
 	"relay.mleku.dev/publish"
+	"relay.mleku.dev/relay/helpers"
 	"relay.mleku.dev/relay/interfaces"
 	"relay.mleku.dev/servemux"
 	"relay.mleku.dev/units"
@@ -45,13 +46,18 @@ func New(s interfaces.Server, path string, sm *servemux.S) (handler *api.Handler
 }
 
 func (a *A) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// remote := helpers.GetRemoteFromReq(r)
-	// for _, a := range a.Server.Configuration().BlockList {
-	// 	if strings.HasPrefix(remote, a) {
-	// 		http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
-	// 		return
-	// 	}
-	// }
+	if !a.Server.Configured() {
+		http.Error(w, http.StatusText(http.StatusServiceUnavailable),
+			http.StatusServiceUnavailable)
+		return
+	}
+	remote := helpers.GetRemoteFromReq(r)
+	for _, a := range a.Server.Configuration().BlockList {
+		if strings.HasPrefix(remote, a) {
+			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+			return
+		}
+	}
 	if r.Header.Get("Upgrade") != "websocket" {
 		a.Server.HandleRelayInfo(w, r)
 		return

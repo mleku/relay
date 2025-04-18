@@ -31,7 +31,6 @@ func (r *T) GetConfiguration() (c *config.C, err error) {
 		c = &config.C{BlockList: make([]string, 0)}
 		var it *badger.Item
 		if it, err = txn.Get(prefixes.Configuration.Key()); chk.E(err) {
-			err = nil
 			return
 		}
 		var b []byte

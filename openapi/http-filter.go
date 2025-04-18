@@ -98,6 +98,10 @@ func (x *Operations) RegisterFilter(api huma.API) {
 		Description: helpers.GenerateDescription(description, scopes),
 		Security:    []map[string][]string{{"auth": scopes}},
 	}, func(ctx context.T, input *FilterInput) (output *FilterOutput, err error) {
+		if !x.Server.Configured() {
+			err = huma.Error404NotFound("server is not configured")
+			return
+		}
 		log.I.S(input)
 		var f *filter.T
 		if f, err = input.ToFilter(); chk.E(err) {

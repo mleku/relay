@@ -22,6 +22,7 @@ type Server interface {
 	AuthRequired() bool
 	CheckOwnerLists(c context.T)
 	Configuration() config.C
+	Configured() bool
 	Context() context.T
 	HandleRelayInfo(w http.ResponseWriter, r *http.Request)
 	Lock()

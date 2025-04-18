@@ -32,6 +32,10 @@ func (x *Operations) RegisterShutdown(api huma.API) {
 		Security:      []map[string][]string{{"auth": scopes}},
 		DefaultStatus: 204,
 	}, func(ctx context.T, input *ShutdownInput) (wgh *ShutdownOutput, err error) {
+		if !x.Server.Configured() {
+			err = huma.Error404NotFound("server is not configured")
+			return
+		}
 		r := ctx.Value("http-request").(*http.Request)
 		authed, _ := x.AdminAuth(r)
 		if !authed {

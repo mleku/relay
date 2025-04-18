@@ -111,6 +111,10 @@ func (x *Operations) RegisterConfigurationGet(api huma.API) {
 		Security:    []map[string][]string{{"auth": scopes}},
 	}, func(ctx context.T, input *ConfigurationGetInput) (output *ConfigurationGetOutput,
 		err error) {
+		if !x.Server.Configured() {
+			err = huma.Error404NotFound("server is not configured")
+			return
+		}
 		r := ctx.Value("http-request").(*http.Request)
 		authed, _ := x.AdminAuth(r)
 		if !authed {
