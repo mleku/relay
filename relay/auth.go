@@ -47,9 +47,9 @@ func (s *Server) unauthorized(w http.ResponseWriter, r *http.Request) {
 		"not authorized, either you did not provide an auth token or what you provided does not grant access\n")
 }
 
-// ServiceUrl returns the address of the relay to send back in auth responses.
+// ServiceURL returns the address of the relay to send back in auth responses.
 // If auth is disabled this returns an empty string.
-func (s *Server) ServiceUrl(req *http.Request) (st string) {
+func (s *Server) ServiceURL(req *http.Request) (st string) {
 	if !s.AuthRequired() {
 		return
 	}

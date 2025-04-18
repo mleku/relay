@@ -10,14 +10,15 @@ import (
 	"relay.mleku.dev/context"
 	"relay.mleku.dev/hex"
 	"relay.mleku.dev/log"
+	"relay.mleku.dev/relay/config"
 	"relay.mleku.dev/relay/helpers"
 	"relay.mleku.dev/store"
 )
 
 // ConfigurationSetInput is the parameters for HTTP API method to set Configuration.
 type ConfigurationSetInput struct {
-	Auth string               `header:"Authorization" doc:"nostr nip-98 (and expiring variant)" required:"true"`
-	Body *store.Configuration `doc:"the new configuration"`
+	Auth string    `header:"Authorization" doc:"nostr nip-98 (and expiring variant)" required:"true"`
+	Body *config.C `doc:"the new configuration"`
 }
 
 // ConfigurationGetInput is the parameters for HTTP API method to get Configuration.
@@ -28,7 +29,7 @@ type ConfigurationGetInput struct {
 
 // ConfigurationGetOutput is the result of getting Configuration.
 type ConfigurationGetOutput struct {
-	Body store.Configuration `doc:"the current configuration"`
+	Body config.C `doc:"the current configuration"`
 }
 
 // RegisterConfigurationSet implements the HTTP API for setting Configuration.
@@ -83,7 +84,7 @@ func (x *Operations) RegisterConfigurationSet(api huma.API) {
 			if err = c.SetConfiguration(input.Body); chk.E(err) {
 				return
 			}
-			var cfg *store.Configuration
+			var cfg *config.C
 			if cfg, err = c.GetConfiguration(); chk.E(err) {
 				return
 			}

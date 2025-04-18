@@ -13,6 +13,8 @@ import (
 
 type Header struct{ Key, Value string }
 
+type Headers []Header
+
 // Handler is an HTTP handler with a prescribed root path and net.Listener for handling HTTP
 // requests.
 type Handler struct {
@@ -21,7 +23,7 @@ type Handler struct {
 	// to from this.
 	Path string
 	// Header is a header key/value pair that must match for the handler to be called.
-	Header
+	Headers
 }
 
 type Handlers []*Handler
@@ -43,7 +45,6 @@ func RegisterMiddleware(m Middleware) { Handle.Middlewares = append(Handle.Middl
 
 // Router processes a request according to the registered Handlers.
 func (a *A) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	log.I.F("handling path %s", r.URL.Path)
 	for _, m := range Handle.Middlewares {
 		if err := m(w, r); chk.E(err) {
 			return
@@ -51,12 +52,16 @@ func (a *A) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, h := range Handle.Handlers {
 		if strings.HasPrefix(r.URL.Path, h.Path) {
-			if r.Header.Get(h.Header.Key) == h.Header.Value {
+			var count int
+			for _, hdr := range h.Headers {
+				if r.Header.Get(hdr.Key) == hdr.Value {
+					count++
+				}
+			}
+			if count == len(h.Headers) {
 				h.ServeMux.ServeHTTP(w, r)
 				return
 			}
-			h.ServeHTTP(w, r)
-			return
 		}
 	}
 	log.D.F("handler for path %s not found", r.URL.Path)

@@ -7,11 +7,11 @@ import (
 
 	"relay.mleku.dev/chk"
 	"relay.mleku.dev/ratel/prefixes"
-	"relay.mleku.dev/store"
+	"relay.mleku.dev/relay/config"
 )
 
-// SetConfiguration stores the store.Configuration value to a provided setting.
-func (r *T) SetConfiguration(c *store.Configuration) (err error) {
+// SetConfiguration stores the store.C value to a provided setting.
+func (r *T) SetConfiguration(c *config.C) (err error) {
 	var b []byte
 	if b, err = json.Marshal(c); chk.E(err) {
 		return
@@ -25,10 +25,10 @@ func (r *T) SetConfiguration(c *store.Configuration) (err error) {
 	return
 }
 
-// GetConfiguration returns the current store.Configuration stored in the database.
-func (r *T) GetConfiguration() (c *store.Configuration, err error) {
+// GetConfiguration returns the current store.C stored in the database.
+func (r *T) GetConfiguration() (c *config.C, err error) {
 	err = r.View(func(txn *badger.Txn) (err error) {
-		c = &store.Configuration{BlockList: make([]string, 0)}
+		c = &config.C{BlockList: make([]string, 0)}
 		var it *badger.Item
 		if it, err = txn.Get(prefixes.Configuration.Key()); chk.E(err) {
 			err = nil

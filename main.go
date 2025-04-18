@@ -22,6 +22,7 @@ import (
 	"relay.mleku.dev/ratel"
 	"relay.mleku.dev/relay"
 	"relay.mleku.dev/servemux"
+	"relay.mleku.dev/socketapi"
 	"relay.mleku.dev/units"
 	"relay.mleku.dev/version"
 )
@@ -60,6 +61,8 @@ func main() {
 	}
 	h := openapi.New(s, cfg.AppName, version.V, version.Description, "/api", serveMux)
 	api.RegisterHandler(h)
+	a := socketapi.New(s, "/", serveMux)
+	api.RegisterHandler(a)
 	interrupt.AddHandler(func() { s.Shutdown() })
 	if err = s.Start(); err != nil {
 		if errors.Is(err, httputil.ErrClosed) {

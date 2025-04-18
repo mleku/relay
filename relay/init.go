@@ -15,7 +15,7 @@ import (
 	"relay.mleku.dev/kind"
 	"relay.mleku.dev/kinds"
 	"relay.mleku.dev/log"
-	"relay.mleku.dev/store"
+	"relay.mleku.dev/relay/config"
 	"relay.mleku.dev/tag"
 )
 
@@ -37,7 +37,7 @@ func (s *Server) Init() {
 		return
 	}
 	if s.configuration == nil {
-		s.configuration = &store.Configuration{
+		s.configuration = &config.C{
 			FirstTime:      getFirstTime(),
 			BlockList:      nil,
 			Owners:         nil,

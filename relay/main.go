@@ -15,6 +15,7 @@ import (
 	"relay.mleku.dev/chk"
 	"relay.mleku.dev/context"
 	"relay.mleku.dev/log"
+	"relay.mleku.dev/relay/config"
 	"relay.mleku.dev/relay/helpers"
 	"relay.mleku.dev/servemux"
 	"relay.mleku.dev/signer"
@@ -36,7 +37,7 @@ type Server struct {
 	MaxLimit int
 
 	configurationMx sync.Mutex
-	configuration   *store.Configuration
+	configuration   *config.C
 
 	sync.Mutex
 	admins []signer.I

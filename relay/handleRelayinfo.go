@@ -12,7 +12,7 @@ import (
 	"relay.mleku.dev/log"
 )
 
-func (s *Server) handleRelayInfo(w http.ResponseWriter, r *http.Request) {
+func (s *Server) HandleRelayInfo(w http.ResponseWriter, r *http.Request) {
 	r.Header.Set("Content-Type", "application/json")
 	log.I.Ln("handling relay information document")
 	var info *relayinfo.T
@@ -30,7 +30,7 @@ func (s *Server) handleRelayInfo(w http.ResponseWriter, r *http.Request) {
 		relayinfo.ProtectedEvents,
 		relayinfo.RelayListMetadata,
 	)
-	if s.ServiceUrl(r) != "" {
+	if s.ServiceURL(r) != "" {
 		supportedNIPs = append(supportedNIPs, relayinfo.Authentication.N())
 	}
 	sort.Sort(supportedNIPs)

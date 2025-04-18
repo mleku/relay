@@ -7,6 +7,7 @@ import (
 	"relay.mleku.dev/chk"
 	"relay.mleku.dev/context"
 	"relay.mleku.dev/event"
+	"relay.mleku.dev/relay/config"
 	"relay.mleku.dev/relay/interfaces"
 	"relay.mleku.dev/store"
 )
@@ -19,16 +20,16 @@ func (s *Server) AdminAuth(r *http.Request,
 
 func (s *Server) Storage() store.I { return s.Store }
 
-func (s *Server) Configuration() store.Configuration {
+func (s *Server) Configuration() config.C {
 	s.configurationMx.Lock()
 	defer s.configurationMx.Unlock()
 	if s.configuration == nil {
-		return store.Configuration{}
+		return config.C{}
 	}
 	return *s.configuration
 }
 
-func (s *Server) SetConfiguration(cfg *store.Configuration) {
+func (s *Server) SetConfiguration(cfg *config.C) {
 	s.configurationMx.Lock()
 	s.configuration = cfg
 	chk.E(s.UpdateConfiguration())

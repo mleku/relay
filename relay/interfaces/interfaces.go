@@ -7,33 +7,31 @@ import (
 	"relay.mleku.dev/context"
 	"relay.mleku.dev/event"
 	"relay.mleku.dev/filters"
+	"relay.mleku.dev/relay/config"
 	"relay.mleku.dev/store"
 )
 
 type Server interface {
-	AcceptReq(c context.T, hr *http.Request, id []byte, ff *filters.T,
-		authedPubkey []byte) (allowed *filters.T,
-		ok bool, modified bool)
-	AcceptEvent(
-		c context.T, ev *event.T, hr *http.Request, origin string,
+	AcceptEvent(c context.T, ev *event.T, hr *http.Request, origin string,
 		authedPubkey []byte) (accept bool, notice string, afterSave func())
-	AddEvent(
-		c context.T, ev *event.T, hr *http.Request,
-		origin string, authedPubkey []byte) (accepted bool,
-		message []byte)
-	AdminAuth(r *http.Request,
-		tolerance ...time.Duration) (authed bool, pubkey []byte)
+	AcceptReq(c context.T, hr *http.Request, id []byte, ff *filters.T,
+		authedPubkey []byte) (allowed *filters.T, ok bool, modified bool)
+	AddEvent(c context.T, ev *event.T, hr *http.Request, origin string,
+		authedPubkey []byte) (accepted bool, message []byte)
+	AdminAuth(r *http.Request, tolerance ...time.Duration) (authed bool, pubkey []byte)
 	AuthRequired() bool
-	Configuration() store.Configuration
+	CheckOwnerLists(c context.T)
+	Configuration() config.C
 	Context() context.T
+	HandleRelayInfo(w http.ResponseWriter, r *http.Request)
+	Lock()
 	Owners() [][]byte
+	OwnersFollowed(pubkey string) (ok bool)
 	PublicReadable() bool
-	SetConfiguration(*store.Configuration)
+	ServiceURL(req *http.Request) (s string)
+	SetConfiguration(*config.C)
 	Shutdown()
 	Storage() store.I
-	Lock()
 	Unlock()
 	ZeroLists()
-	CheckOwnerLists(c context.T)
-	OwnersFollowed(pubkey string) (ok bool)
 }

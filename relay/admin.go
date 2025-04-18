@@ -6,13 +6,14 @@ import (
 	"relay.mleku.dev/hex"
 	"relay.mleku.dev/log"
 	"relay.mleku.dev/p256k"
+	"relay.mleku.dev/relay/config"
 	"relay.mleku.dev/signer"
 	"relay.mleku.dev/store"
 )
 
 func (s *Server) UpdateConfiguration() (err error) {
 	if c, ok := s.Store.(store.Configurationer); ok {
-		var cfg *store.Configuration
+		var cfg *config.C
 		if cfg, err = c.GetConfiguration(); chk.E(err) {
 			err = nil
 			return
