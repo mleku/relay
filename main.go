@@ -14,6 +14,7 @@ import (
 	"relay.mleku.dev/chk"
 	"relay.mleku.dev/config"
 	"relay.mleku.dev/context"
+	"relay.mleku.dev/gui/gui"
 	"relay.mleku.dev/interrupt"
 	"relay.mleku.dev/log"
 	"relay.mleku.dev/lol"
@@ -60,6 +61,7 @@ func main() {
 	}
 	openapi.New(s, cfg.AppName, version.V, version.Description, "/api", serveMux)
 	socketapi.New(s, "/{$}", serveMux)
+	gui.New("/ui", serveMux)
 	interrupt.AddHandler(func() { s.Shutdown() })
 	if err = s.Start(); err != nil {
 		if errors.Is(err, httputil.ErrClosed) {

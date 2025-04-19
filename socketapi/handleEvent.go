@@ -41,7 +41,7 @@ func (a *A) HandleEvent(c context.T, req []byte, srv interfaces.Server,
 	}
 	accept, notice, after := a.Server.AcceptEvent(c, env.T, a.Listener.Req(),
 		a.Listener.AuthedBytes(), remote)
-	log.T.F("%s accepted %s", remote, accept)
+	log.T.F("%s accepted %s %v", remote, accept)
 	if !accept {
 		if strings.Contains(notice, "mute") {
 			if err = okenvelope.NewFrom(env.Id, false,
