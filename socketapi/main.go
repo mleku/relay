@@ -14,7 +14,6 @@ import (
 	"relay.mleku.dev/publish"
 	"relay.mleku.dev/relay/helpers"
 	"relay.mleku.dev/relay/interfaces"
-	"relay.mleku.dev/router"
 	"relay.mleku.dev/servemux"
 	"relay.mleku.dev/units"
 	"relay.mleku.dev/ws"
@@ -33,15 +32,9 @@ type A struct {
 	interfaces.Server
 }
 
-func New(s interfaces.Server, path string, sm *servemux.S) (handler *router.Handler) {
+func New(s interfaces.Server, path string, sm *servemux.S) {
 	a := &A{Server: s}
-	sm.HandleFunc(path, a.ServeHTTP)
-	handler = &router.Handler{Path: path, S: sm,
-		Headers: router.Headers{
-			// api.Header{Key: "Upgrade", Value: "websocket"},
-			// api.Header{Key: "Connection", Value: "upgrade"},
-		},
-	}
+	sm.Handle(path, a)
 	return
 }
 
@@ -53,9 +46,14 @@ func (a *A) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.StatusServiceUnavailable)
 		return
 	}
-	if r.Header.Get("Upgrade") != "websocket" {
+	if r.Header.Get("Upgrade") != "websocket" && r.Header.Get("Accept") == "application/nostr+json" {
 		log.T.F("serving relay info %s", remote)
 		a.Server.HandleRelayInfo(w, r)
+		return
+	}
+	if r.Header.Get("Upgrade") != "websocket" {
+		// todo: we can put a website here
+		http.Error(w, http.StatusText(http.StatusUpgradeRequired), http.StatusUpgradeRequired)
 		return
 	}
 	var err error

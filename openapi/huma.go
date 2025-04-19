@@ -45,7 +45,6 @@ func NewHuma(router *servemux.S, name, version, description string) (api huma.AP
   </body>
 </html>`))
 	})
-
 	api = humago.New(router, config)
 	api.UseMiddleware(ExposeMiddleware)
 	return

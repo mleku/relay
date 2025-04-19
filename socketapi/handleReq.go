@@ -63,7 +63,6 @@ func (a *A) HandleReq(c context.T, req []byte, srv interfaces.Server,
 			}
 		}
 	}
-	// log.I.ToSliceOfBytes("handling %s", env.Marshal(nil))
 	if allowed != env.Filters {
 		defer func() {
 			if a.AuthRequired() &&

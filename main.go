@@ -20,7 +20,6 @@ import (
 	"relay.mleku.dev/openapi"
 	"relay.mleku.dev/ratel"
 	"relay.mleku.dev/relay"
-	"relay.mleku.dev/router"
 	"relay.mleku.dev/servemux"
 	"relay.mleku.dev/socketapi"
 	"relay.mleku.dev/units"
@@ -59,10 +58,8 @@ func main() {
 		Store:    storage,
 		MaxLimit: ratel.DefaultMaxLimit,
 	}
-	h := openapi.New(s, cfg.AppName, version.V, version.Description, "/api", serveMux)
-	router.RegisterHandler(h)
-	a := socketapi.New(s, "/", serveMux)
-	router.RegisterHandler(a)
+	openapi.New(s, cfg.AppName, version.V, version.Description, "/api", serveMux)
+	socketapi.New(s, "/{$}", serveMux)
 	interrupt.AddHandler(func() { s.Shutdown() })
 	if err = s.Start(); err != nil {
 		if errors.Is(err, httputil.ErrClosed) {
