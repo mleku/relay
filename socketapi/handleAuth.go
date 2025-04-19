@@ -14,6 +14,7 @@ func (a *A) HandleAuth(req []byte, srv interfaces.Server, remote string) (msg []
 	log.T.F("%s handling auth %s", remote, req)
 	svcUrl := srv.ServiceURL(a.Listener.Req())
 	if svcUrl == "" {
+		log.T.F("%s service url not found", remote)
 		return
 	}
 	log.T.F("received auth response,%s", req)

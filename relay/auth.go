@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"relay.mleku.dev/httpauth"
+	"relay.mleku.dev/log"
 
 	"relay.mleku.dev/chk"
 )
@@ -50,7 +51,8 @@ func (s *Server) unauthorized(w http.ResponseWriter, r *http.Request) {
 // ServiceURL returns the address of the relay to send back in auth responses.
 // If auth is disabled this returns an empty string.
 func (s *Server) ServiceURL(req *http.Request) (st string) {
-	if !s.AuthRequired() {
+	if !s.AuthRequired() && len(s.Owners()) == 0 {
+		log.T.F("auth not required")
 		return
 	}
 	host := req.Header.Get("X-Forwarded-Host")

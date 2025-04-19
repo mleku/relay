@@ -16,7 +16,7 @@ import (
 
 // DefaultMaxLimit is set to a size that means the usual biggest batch of events sent to a
 // client usually is at most about 256kb or so.
-const DefaultMaxLimit = 512
+const DefaultMaxLimit = 2048
 
 // T is a badger event store database with layer2 and garbage collection.
 type T struct {
