@@ -3,7 +3,6 @@ package relay
 import (
 	"bytes"
 	"fmt"
-	"net/http"
 
 	"relay.mleku.dev/chk"
 	"relay.mleku.dev/context"
@@ -16,41 +15,25 @@ import (
 	"relay.mleku.dev/tag/atag"
 )
 
-func (s *Server) acceptEvent(c context.T, evt *event.T, hr *http.Request,
-	remote string, authedPubkey []byte) (accept bool, notice string, afterSave func()) {
+func (s *Server) acceptEvent(c context.T, evt *event.T, remote string,
+	authedPubkey []byte) (accept bool, notice string, afterSave func()) {
 	// if the authenticator is enabled we require auth to accept events
 	if !s.AuthRequired() && len(s.owners) < 1 {
 		return true, "", nil
 	}
-	// if evt.CreatedAt.I64()-10 > time.Now().Unix() {
-	// 	return false,
-	// 		"realy does not accept timestamps that are so obviously fake, fix your clock",
-	// 		nil
-	// }
 	if len(authedPubkey) != 32 && !s.PublicReadable() {
 		return false, fmt.Sprintf("client not authed with auth required %s", remote), nil
 	}
 	if len(s.owners) > 0 {
 		s.Lock()
 		defer s.Unlock()
-		if evt.Kind.Equal(kind.FollowList) {
+		if evt.Kind.Equal(kind.FollowList) || evt.Kind.Equal(kind.MuteList) {
 			// if owner or any of their follows lists are updated we need to regenerate the
 			// list this ensures that immediately a follow changes their list that newly
 			// followed can access the relay and upload DM events and such for owner
 			// followed users.
 			for o := range s.ownersFollowed {
 				if bytes.Equal([]byte(o), evt.Pubkey) {
-					return true, "", func() {
-						s.ZeroLists()
-						s.CheckOwnerLists(context.Bg())
-					}
-				}
-			}
-		}
-		if evt.Kind.Equal(kind.MuteList) {
-			// only owners control the mute list
-			for _, o := range s.owners {
-				if bytes.Equal(o, evt.Pubkey) {
 					return true, "", func() {
 						s.ZeroLists()
 						s.CheckOwnerLists(context.Bg())
@@ -123,12 +106,8 @@ func (s *Server) acceptEvent(c context.T, evt *event.T, hr *http.Request,
 	}
 	// if auth is enabled and there is no moderators we just check that the pubkey
 	// has been loaded via the auth function.
-	accept = len(authedPubkey) == schnorr.PubKeyBytesLen
-	if !accept {
+	if len(authedPubkey) == schnorr.PubKeyBytesLen && s.AuthRequired() {
 		notice = "auth required but user not authed"
-		afterSave = func() {
-
-		}
 	}
 	return
 }

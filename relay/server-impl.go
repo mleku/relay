@@ -50,7 +50,7 @@ func (s *Server) AcceptEvent(
 	c context.T, ev *event.T, hr *http.Request, authedPubkey []byte,
 	remote string) (accept bool, notice string, afterSave func()) {
 
-	return s.acceptEvent(c, ev, hr, remote, authedPubkey)
+	return s.acceptEvent(c, ev, remote, authedPubkey)
 }
 
 func (s *Server) PublicReadable() bool {

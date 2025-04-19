@@ -58,6 +58,7 @@ func (a *A) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		var allowed bool
 		for _, a := range allowList {
 			if strings.HasPrefix(remote, a) {
+				log.T.F("%s on allow list", remote)
 				allowed = true
 				break
 			}
@@ -75,7 +76,7 @@ func (a *A) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if r.Header.Get("Upgrade") != "websocket" {
-		log.T.S("serving relay info %s", remote)
+		log.T.F("serving relay info %s", remote)
 		a.Server.HandleRelayInfo(w, r)
 		return
 	}
