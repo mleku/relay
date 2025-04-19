@@ -2,6 +2,7 @@ package config
 
 type C struct {
 	FirstTime      string   `json:"first_time" doc:"on first run, this is configured with a random string that must be used to set the first server admin"`
+	AllowList      []string `json:"allow_list" doc:"List of allowed IP addresses"`
 	BlockList      []string `json:"block_list" doc:"list of IP addresses that will be ignored"`
 	Admins         []string `json:"admins" doc:"list of npubs that have admin access"`
 	Owners         []string `json:"owners" doc:"list of owner npubs whose follow lists set the whitelisted users and enables auth implicitly for all writes"`

@@ -84,6 +84,20 @@ func (s *Server) Start() (err error) {
 // ServeHTTP is the server http.Handler.
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	remote := helpers.GetRemoteFromReq(r)
+	allowList := s.Configuration().AllowList
+	if len(allowList) > 0 {
+		var allowed bool
+		for _, a := range allowList {
+			if strings.HasPrefix(remote, a) {
+				allowed = true
+				break
+			}
+		}
+		if !allowed {
+			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
+			return
+		}
+	}
 	for _, a := range s.Configuration().BlockList {
 		if strings.HasPrefix(remote, a) {
 			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
