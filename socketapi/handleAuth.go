@@ -10,9 +10,8 @@ import (
 	"relay.mleku.dev/relay/interfaces"
 )
 
-func (a *A) HandleAuth(req []byte,
-	srv interfaces.Server) (msg []byte) {
-
+func (a *A) HandleAuth(req []byte, srv interfaces.Server, remote string) (msg []byte) {
+	log.T.F("%s handling auth %s", remote, req)
 	svcUrl := srv.ServiceURL(a.Listener.Req())
 	if svcUrl == "" {
 		return

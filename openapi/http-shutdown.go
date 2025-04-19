@@ -37,7 +37,8 @@ func (x *Operations) RegisterShutdown(api huma.API) {
 			return
 		}
 		r := ctx.Value("http-request").(*http.Request)
-		authed, _ := x.AdminAuth(r)
+		remote := helpers.GetRemoteFromReq(r)
+		authed, _ := x.AdminAuth(r, remote)
 		if !authed {
 			err = huma.Error401Unauthorized("authorization required")
 			return

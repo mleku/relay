@@ -21,9 +21,10 @@ import (
 	"relay.mleku.dev/tag"
 )
 
-func (a *A) HandleEvent(c context.T, req []byte, srv interfaces.Server) (msg []byte) {
+func (a *A) HandleEvent(c context.T, req []byte, srv interfaces.Server,
+	remote string) (msg []byte) {
 
-	log.T.F("handleEvent %s %s", a.Listener.RealRemote(), req)
+	log.T.F("%s handleEvent %s", remote, req)
 	var err error
 	var ok bool
 	var rem []byte
@@ -36,10 +37,11 @@ func (a *A) HandleEvent(c context.T, req []byte, srv interfaces.Server) (msg []b
 		return
 	}
 	if len(rem) > 0 {
-		log.I.F("extra '%s'", rem)
+		log.T.F("%s extra '%s'", remote, rem)
 	}
 	accept, notice, after := a.Server.AcceptEvent(c, env.T, a.Listener.Req(),
-		a.Listener.RealRemote(), a.Listener.AuthedBytes())
+		a.Listener.AuthedBytes(), remote)
+	log.T.S("%s accepted %s", remote, accept)
 	if !accept {
 		if strings.Contains(notice, "mute") {
 			if err = okenvelope.NewFrom(env.Id, false,
@@ -235,8 +237,7 @@ func (a *A) HandleEvent(c context.T, req []byte, srv interfaces.Server) (msg []b
 		}
 	}
 	var reason []byte
-	ok, reason = srv.AddEvent(c, env.T, a.Listener.Req(), a.Listener.RealRemote(),
-		a.Listener.AuthedBytes())
+	ok, reason = srv.AddEvent(c, env.T, a.Listener.Req(), a.Listener.AuthedBytes(), remote)
 	log.I.F("event added %v, %s", ok, reason)
 	if err = okenvelope.NewFrom(env.Id, ok, reason).Write(a.Listener); chk.E(err) {
 		return

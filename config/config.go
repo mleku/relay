@@ -11,6 +11,7 @@ import (
 
 	"relay.mleku.dev/chk"
 	"relay.mleku.dev/config/keyvalue"
+	"relay.mleku.dev/log"
 	"relay.mleku.dev/lol"
 	"relay.mleku.dev/version"
 )
@@ -38,6 +39,7 @@ func New() (c *C) {
 	if err := env.Load(c, &env.Options{SliceSep: ","}); chk.T(err) {
 		return
 	}
+	log.I.S(c)
 	if len(os.Args) == 2 && os.Args[1] == "help" {
 		fmt.Printf("\nenvironment variables that configure %s\n\n", c.AppName)
 		env.Usage(c, os.Stdout, nil)

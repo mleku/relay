@@ -13,7 +13,8 @@ import (
 	"relay.mleku.dev/log"
 )
 
-func (a *A) HandleMessage(msg []byte) {
+func (a *A) HandleMessage(msg []byte, remote string) {
+	log.T.F("%s handling message %s", remote, msg)
 	var notice []byte
 	var err error
 	var t string
@@ -23,13 +24,13 @@ func (a *A) HandleMessage(msg []byte) {
 	}
 	switch t {
 	case eventenvelope.L:
-		notice = a.HandleEvent(a.Ctx, rem, a.Server)
+		notice = a.HandleEvent(a.Ctx, rem, a.Server, remote)
 	case reqenvelope.L:
-		notice = a.HandleReq(a.Ctx, rem, a.Server)
+		notice = a.HandleReq(a.Ctx, rem, a.Server, remote)
 	case closeenvelope.L:
-		notice = a.HandleClose(rem, a.Server)
+		notice = a.HandleClose(rem, a.Server, remote)
 	case authenvelope.L:
-		notice = a.HandleAuth(rem, a.Server)
+		notice = a.HandleAuth(rem, a.Server, remote)
 	default:
 		notice = []byte(fmt.Sprintf("unknown envelope type %s\n%s", t, rem))
 	}

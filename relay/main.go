@@ -11,12 +11,12 @@ import (
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/rs/cors"
 
-	"relay.mleku.dev/api"
 	"relay.mleku.dev/chk"
 	"relay.mleku.dev/context"
 	"relay.mleku.dev/log"
 	"relay.mleku.dev/relay/config"
 	"relay.mleku.dev/relay/helpers"
+	"relay.mleku.dev/router"
 	"relay.mleku.dev/servemux"
 	"relay.mleku.dev/signer"
 	"relay.mleku.dev/store"
@@ -67,7 +67,7 @@ func (s *Server) Start() (err error) {
 		return
 	}
 	s.HTTPServer = &http.Server{
-		Handler:           cors.Default().Handler(api.Handle),
+		Handler:           cors.Default().Handler(router.Handle),
 		Addr:              s.Address,
 		ReadHeaderTimeout: 7 * time.Second,
 		IdleTimeout:       28 * time.Second,

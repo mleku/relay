@@ -13,7 +13,7 @@ import (
 	"relay.mleku.dev/chk"
 )
 
-func (s *Server) adminAuth(r *http.Request,
+func (s *Server) adminAuth(r *http.Request, remote string,
 	tolerance ...time.Duration) (authed bool, pubkey []byte) {
 	if len(s.admins) == 0 {
 		return

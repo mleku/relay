@@ -49,7 +49,8 @@ func (x *Operations) RegisterConfigurationSet(api huma.API) {
 		Security:    []map[string][]string{{"auth": scopes}},
 	}, func(ctx context.T, input *ConfigurationSetInput) (wgh *struct{}, err error) {
 		r := ctx.Value("http-request").(*http.Request)
-		authed, _ := x.AdminAuth(r)
+		remote := helpers.GetRemoteFromReq(r)
+		authed, _ := x.AdminAuth(r, remote)
 		if !authed {
 			log.I.F("checking first time password %s %s %v",
 				input.Auth, x.Configuration().FirstTime,
@@ -116,7 +117,8 @@ func (x *Operations) RegisterConfigurationGet(api huma.API) {
 			return
 		}
 		r := ctx.Value("http-request").(*http.Request)
-		authed, _ := x.AdminAuth(r)
+		remote := helpers.GetRemoteFromReq(r)
+		authed, _ := x.AdminAuth(r, remote)
 		if !authed {
 			err = huma.Error401Unauthorized("authorization required")
 			return

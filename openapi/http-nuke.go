@@ -46,8 +46,8 @@ func (x *Operations) RegisterNuke(api huma.API) {
 		}
 		r := ctx.Value("http-request").(*http.Request)
 		// w := ctx.Value("http-response").(http.ResponseWriter)
-		rr := helpers.GetRemoteFromReq(r)
-		authed, pubkey := x.AdminAuth(r)
+		remote := helpers.GetRemoteFromReq(r)
+		authed, pubkey := x.AdminAuth(r, remote)
 		if !authed {
 			// pubkey = ev.Pubkey
 			err = huma.Error401Unauthorized("user not authorized for action")
@@ -58,7 +58,7 @@ func (x *Operations) RegisterNuke(api huma.API) {
 			return
 		}
 		log.I.F("database nuke request from %s pubkey %0x",
-			rr, pubkey)
+			remote, pubkey)
 		sto := x.Storage()
 		log.I.F("nuking")
 		if nuke, ok := sto.(store.Nukener); ok {

@@ -26,8 +26,10 @@ import (
 	"relay.mleku.dev/tag"
 )
 
-func (a *A) HandleReq(c context.T, req []byte, srv interfaces.Server) (r []byte) {
+func (a *A) HandleReq(c context.T, req []byte, srv interfaces.Server,
+	remote string) (r []byte) {
 
+	log.T.F("%s handleReq %s", remote, req)
 	sto := srv.Storage()
 	var err error
 	var rem []byte
@@ -36,15 +38,16 @@ func (a *A) HandleReq(c context.T, req []byte, srv interfaces.Server) (r []byte)
 		return normalize.Error.F(err.Error())
 	}
 	if len(rem) > 0 {
-		log.I.F("extra '%s'", rem)
+		log.I.F("%s extra '%s'", remote, rem)
 	}
 	allowed := env.Filters
-	var accepted, modified bool
-	allowed, accepted, modified = a.Server.AcceptReq(c, a.Listener.Req(),
+	var accept, modified bool
+	allowed, accept, modified = a.Server.AcceptReq(c, a.Listener.Req(),
 		env.Subscription.T,
 		env.Filters,
-		[]byte(a.Listener.Authed()))
-	if !accepted || allowed == nil || modified {
+		[]byte(a.Listener.Authed()), remote)
+	log.T.F("%s accept %v modified %v", remote, accept, modified)
+	if !accept || allowed == nil || modified {
 		if a.Server.AuthRequired() && !a.Listener.AuthRequested() {
 			a.Listener.RequestAuth()
 			if err = closedenvelope.NewFrom(env.Subscription,

@@ -40,17 +40,17 @@ func (x *Operations) RegisterExport(api huma.API) {
 			return
 		}
 		r := ctx.Value("http-request").(*http.Request)
-		rr := helpers.GetRemoteFromReq(r)
-		log.I.F("processing export from %s", rr)
+		remote := helpers.GetRemoteFromReq(r)
+		log.I.F("processing export from %s", remote)
 		// w := ctx.Value("http-response").(http.ResponseWriter)
-		authed, pubkey := x.AdminAuth(r)
+		authed, pubkey := x.AdminAuth(r, remote)
 		if !authed {
 			// pubkey = ev.Pubkey
 			err = huma.Error401Unauthorized("Not Authorized")
 			return
 		}
-		log.I.F("export of event data requested on admin port from %s pubkey %0x",
-			rr, pubkey)
+		log.I.F("%s export of event data requested on admin port pubkey %0x",
+			remote, pubkey)
 		sto := x.Storage()
 		resp = &huma.StreamResponse{
 			func(ctx huma.Context) {

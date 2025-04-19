@@ -46,8 +46,8 @@ func (x *Operations) RegisterImport(api huma.API) {
 			return
 		}
 		r := ctx.Value("http-request").(*http.Request)
-		rr := helpers.GetRemoteFromReq(r)
-		authed, pubkey := x.AdminAuth(r, time.Minute*10)
+		remote := helpers.GetRemoteFromReq(r)
+		authed, pubkey := x.AdminAuth(r, remote, 10*time.Minute)
 		if !authed {
 			// pubkey = ev.Pubkey
 			err = huma.Error401Unauthorized(
@@ -61,7 +61,7 @@ func (x *Operations) RegisterImport(api huma.API) {
 			x.Server.ZeroLists()
 			x.Server.CheckOwnerLists(context.Bg())
 		} else {
-			log.I.F("import of event data requested on admin port from %s pubkey %0x", rr,
+			log.I.F("import of event data requested on admin port from %s pubkey %0x", remote,
 				pubkey)
 			read := io.LimitReader(r.Body, r.ContentLength)
 			sto.Import(read)

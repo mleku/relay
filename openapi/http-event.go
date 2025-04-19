@@ -53,7 +53,7 @@ func (x *Operations) RegisterEvent(api huma.API) {
 		}
 		r := ctx.Value("http-request").(*http.Request)
 		// w := ctx.Value("http-response").(http.ResponseWriter)
-		rr := helpers.GetRemoteFromReq(r)
+		remote := helpers.GetRemoteFromReq(r)
 		ev := &event.T{}
 		if _, err = ev.Unmarshal(input.RawBody); chk.E(err) {
 			err = huma.Error406NotAcceptable(err.Error())
@@ -82,7 +82,7 @@ func (x *Operations) RegisterEvent(api huma.API) {
 		// if there was auth, or no auth, check the relay policy allows accepting the
 		// event (no auth with auth required or auth not valid for action can apply
 		// here).
-		accept, notice, after := x.AcceptEvent(ctx, ev, r, rr, pubkey)
+		accept, notice, after := x.AcceptEvent(ctx, ev, r, pubkey, remote)
 		if !accept {
 			err = huma.Error401Unauthorized(notice)
 			return
@@ -201,7 +201,7 @@ func (x *Operations) RegisterEvent(api huma.API) {
 			return
 		}
 		var reason []byte
-		ok, reason = x.AddEvent(ctx, ev, r, rr, pubkey)
+		ok, reason = x.AddEvent(ctx, ev, r, pubkey, remote)
 		// return the response whether true or false and any reason if false
 		if ok {
 		} else {

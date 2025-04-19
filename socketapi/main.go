@@ -7,7 +7,6 @@ import (
 
 	"github.com/fasthttp/websocket"
 
-	"relay.mleku.dev/api"
 	"relay.mleku.dev/chk"
 	"relay.mleku.dev/context"
 	"relay.mleku.dev/envelopes/authenvelope"
@@ -15,6 +14,7 @@ import (
 	"relay.mleku.dev/publish"
 	"relay.mleku.dev/relay/helpers"
 	"relay.mleku.dev/relay/interfaces"
+	"relay.mleku.dev/router"
 	"relay.mleku.dev/servemux"
 	"relay.mleku.dev/units"
 	"relay.mleku.dev/ws"
@@ -33,11 +33,11 @@ type A struct {
 	interfaces.Server
 }
 
-func New(s interfaces.Server, path string, sm *servemux.S) (handler *api.Handler) {
+func New(s interfaces.Server, path string, sm *servemux.S) (handler *router.Handler) {
 	a := &A{Server: s}
 	sm.HandleFunc(path, a.ServeHTTP)
-	handler = &api.Handler{Path: path, S: sm,
-		Headers: api.Headers{
+	handler = &router.Handler{Path: path, S: sm,
+		Headers: router.Headers{
 			// api.Header{Key: "Upgrade", Value: "websocket"},
 			// api.Header{Key: "Connection", Value: "upgrade"},
 		},
@@ -46,19 +46,22 @@ func New(s interfaces.Server, path string, sm *servemux.S) (handler *api.Handler
 }
 
 func (a *A) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	remote := helpers.GetRemoteFromReq(r)
 	if !a.Server.Configured() {
+		log.T.F("not configured %s", remote)
 		http.Error(w, http.StatusText(http.StatusServiceUnavailable),
 			http.StatusServiceUnavailable)
 		return
 	}
-	remote := helpers.GetRemoteFromReq(r)
 	for _, a := range a.Server.Configuration().BlockList {
 		if strings.HasPrefix(remote, a) {
+			log.T.F("blocked request from %s", remote)
 			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 			return
 		}
 	}
 	if r.Header.Get("Upgrade") != "websocket" {
+		log.T.S("serving relay info %s", remote)
 		a.Server.HandleRelayInfo(w, r)
 		return
 	}
@@ -68,12 +71,14 @@ func (a *A) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	a.Ctx, cancel = context.Cancel(a.Server.Context())
 	var conn *websocket.Conn
 	if conn, err = Upgrader.Upgrade(w, r, nil); err != nil {
-		log.E.F("%s failed to upgrade websocket: %v", a.Listener.RealRemote(), err)
+		log.E.F("%s failed to upgrade websocket: %v", remote, err)
 		return
 	}
+	log.T.F("upgraded to websocket %s", remote)
 	a.Listener = GetListener(conn, r)
 
 	defer func() {
+		log.D.F("%s closing connection", remote)
 		cancel()
 		ticker.Stop()
 		publish.P.Receive(&W{
@@ -89,24 +94,23 @@ func (a *A) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return nil
 	})
 	if a.Server.AuthRequired() {
+		log.T.F("requesting auth from %s", remote)
 		a.Listener.RequestAuth()
 	}
 	if a.Server.AuthRequired() && a.Listener.AuthRequested() && len(a.Listener.Authed()) == 0 {
-		log.I.F("requesting auth from client from %s", a.Listener.RealRemote())
+		log.T.F("requesting auth from client again from %s", a.Listener.RealRemote())
 		if err = authenvelope.NewChallengeWith(a.Listener.Challenge()).Write(a.Listener); chk.E(err) {
 			return
 		}
 		// return
 	}
-	go a.Pinger(a.Ctx, ticker, cancel)
+	go a.Pinger(a.Ctx, ticker, cancel, remote)
 	var message []byte
 	var typ int
 	for {
 		select {
 		case <-a.Ctx.Done():
-			a.Listener.Close()
-			return
-		case <-a.Context().Done():
+			log.I.F("%s closing connection", remote)
 			a.Listener.Close()
 			return
 		default:
@@ -128,10 +132,11 @@ func (a *A) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if typ == websocket.PingMessage {
+			log.T.F("pinging %s", remote)
 			if err = a.Listener.WriteMessage(websocket.PongMessage, nil); chk.E(err) {
 			}
 			continue
 		}
-		go a.HandleMessage(message)
+		go a.HandleMessage(message, remote)
 	}
 }

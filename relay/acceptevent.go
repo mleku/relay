@@ -17,7 +17,7 @@ import (
 )
 
 func (s *Server) acceptEvent(c context.T, evt *event.T, hr *http.Request,
-	origin string, authedPubkey []byte) (accept bool, notice string, afterSave func()) {
+	remote string, authedPubkey []byte) (accept bool, notice string, afterSave func()) {
 	// if the authenticator is enabled we require auth to accept events
 	if !s.AuthRequired() && len(s.owners) < 1 {
 		return true, "", nil
@@ -28,7 +28,7 @@ func (s *Server) acceptEvent(c context.T, evt *event.T, hr *http.Request,
 	// 		nil
 	// }
 	if len(authedPubkey) != 32 && !s.PublicReadable() {
-		return false, fmt.Sprintf("client not authed with auth required %s", origin), nil
+		return false, fmt.Sprintf("client not authed with auth required %s", remote), nil
 	}
 	if len(s.owners) > 0 {
 		s.Lock()

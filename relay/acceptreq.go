@@ -8,12 +8,16 @@ import (
 	"relay.mleku.dev/ec/schnorr"
 	"relay.mleku.dev/filters"
 	"relay.mleku.dev/kinds"
+	"relay.mleku.dev/log"
 )
 
 func (s *Server) AcceptReq(c context.T, hr *http.Request, id []byte,
-	ff *filters.T, authedPubkey []byte) (allowed *filters.T, ok bool, modified bool) {
+	ff *filters.T, authedPubkey []byte, remote string) (allowed *filters.T, ok bool,
+	modified bool) {
 
+	log.T.F("%s AcceptReq pubkey %0x", remote, authedPubkey)
 	if s.PublicReadable() {
+		log.T.F("%s accept because public readable", remote)
 		allowed = ff
 		ok = true
 		return

@@ -1,6 +1,6 @@
-// Package api is a HTTP API router that includes optional middlewares, switches on paths and
+// Package router is a HTTP router that includes optional middlewares, switches on paths and
 // then further can switch on a header key/value pair, and if all else fails, returns a 404.
-package api
+package router
 
 import (
 	"net/http"
@@ -59,6 +59,7 @@ func (a *A) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 			if count == len(h.Headers) {
+				log.T.F("serving for path %s", r.URL.Path)
 				h.ServeMux.ServeHTTP(w, r)
 				return
 			}

@@ -11,7 +11,6 @@ import (
 
 	"github.com/adrg/xdg"
 
-	"relay.mleku.dev/api"
 	"relay.mleku.dev/chk"
 	"relay.mleku.dev/config"
 	"relay.mleku.dev/context"
@@ -21,6 +20,7 @@ import (
 	"relay.mleku.dev/openapi"
 	"relay.mleku.dev/ratel"
 	"relay.mleku.dev/relay"
+	"relay.mleku.dev/router"
 	"relay.mleku.dev/servemux"
 	"relay.mleku.dev/socketapi"
 	"relay.mleku.dev/units"
@@ -60,9 +60,9 @@ func main() {
 		MaxLimit: ratel.DefaultMaxLimit,
 	}
 	h := openapi.New(s, cfg.AppName, version.V, version.Description, "/api", serveMux)
-	api.RegisterHandler(h)
+	router.RegisterHandler(h)
 	a := socketapi.New(s, "/", serveMux)
-	api.RegisterHandler(a)
+	router.RegisterHandler(a)
 	interrupt.AddHandler(func() { s.Shutdown() })
 	if err = s.Start(); err != nil {
 		if errors.Is(err, httputil.ErrClosed) {

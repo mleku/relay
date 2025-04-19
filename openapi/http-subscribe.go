@@ -86,7 +86,7 @@ func (x *Operations) RegisterSubscribe(api huma.API) {
 			}
 			log.I.F("%s", f.Marshal(nil))
 			r := ctx.Value("http-request").(*http.Request)
-			rr := helpers.GetRemoteFromReq(r)
+			remote := helpers.GetRemoteFromReq(r)
 			var valid bool
 			var pubkey []byte
 			valid, pubkey, err = httpauth.CheckAuth(r)
@@ -104,8 +104,7 @@ func (x *Operations) RegisterSubscribe(api huma.API) {
 			allowed := filters.New(f)
 			var accepted, modified bool
 			allowed, accepted, modified = x.Server.AcceptReq(x.Context(), r, nil,
-				filters.New(f),
-				pubkey)
+				filters.New(f), pubkey, remote)
 			if !accepted {
 				err = huma.Error401Unauthorized("auth to get access for this filter")
 				return
@@ -128,7 +127,7 @@ func (x *Operations) RegisterSubscribe(api huma.API) {
 					case senders.Contains(pubkey) || receivers.ContainsAny([]byte("#p"),
 						tag.New(pubkey)):
 						log.T.F("user %0x from %s allowed to query for privileged event",
-							pubkey, rr)
+							pubkey, remote)
 					default:
 						err = huma.Error403Forbidden(fmt.Sprintf(
 							"authenticated user %0x does not have authorization for "+

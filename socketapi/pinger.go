@@ -9,7 +9,8 @@ import (
 	"relay.mleku.dev/log"
 )
 
-func (a *A) Pinger(ctx context.T, ticker *time.Ticker, cancel context.F) {
+func (a *A) Pinger(ctx context.T, ticker *time.Ticker, cancel context.F, remote string) {
+	log.T.F("running pinger for %s", remote)
 	defer func() {
 		cancel()
 		ticker.Stop()
@@ -22,10 +23,9 @@ func (a *A) Pinger(ctx context.T, ticker *time.Ticker, cancel context.F) {
 			err = a.Listener.Conn.WriteControl(websocket.PingMessage, nil,
 				time.Now().Add(DefaultPingWait))
 			if err != nil {
-				log.E.F("error writing ping: %v; closing websocket", err)
+				log.E.F("%s error writing ping: %v; closing websocket", remote, err)
 				return
 			}
-			a.Listener.RealRemote()
 		case <-ctx.Done():
 			return
 		}

@@ -47,7 +47,7 @@ func (x *Operations) RegisterRelay(api huma.API) {
 		}
 		log.I.S(input)
 		r := ctx.Value("http-request").(*http.Request)
-		rr := helpers.GetRemoteFromReq(r)
+		remote := helpers.GetRemoteFromReq(r)
 		var valid bool
 		var pubkey []byte
 		valid, pubkey, err = httpauth.CheckAuth(r)
@@ -71,7 +71,7 @@ func (x *Operations) RegisterRelay(api huma.API) {
 			err = huma.Error406NotAcceptable(err.Error())
 			return
 		}
-		accept, notice, _ := x.AcceptEvent(ctx, ev, r, rr, pubkey)
+		accept, notice, _ := x.AcceptEvent(ctx, ev, r, pubkey, remote)
 		if !accept {
 			err = huma.Error401Unauthorized(notice)
 			return

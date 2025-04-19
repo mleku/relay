@@ -12,13 +12,14 @@ import (
 )
 
 type Server interface {
-	AcceptEvent(c context.T, ev *event.T, hr *http.Request, origin string,
-		authedPubkey []byte) (accept bool, notice string, afterSave func())
+	AcceptEvent(c context.T, ev *event.T, hr *http.Request,
+		authedPubkey []byte, remote string) (accept bool, notice string, afterSave func())
 	AcceptReq(c context.T, hr *http.Request, id []byte, ff *filters.T,
-		authedPubkey []byte) (allowed *filters.T, ok bool, modified bool)
-	AddEvent(c context.T, ev *event.T, hr *http.Request, origin string,
-		authedPubkey []byte) (accepted bool, message []byte)
-	AdminAuth(r *http.Request, tolerance ...time.Duration) (authed bool, pubkey []byte)
+		authedPubkey []byte, remote string) (allowed *filters.T, ok bool, modified bool)
+	AddEvent(c context.T, ev *event.T, hr *http.Request,
+		authedPubkey []byte, remote string) (accepted bool, message []byte)
+	AdminAuth(r *http.Request, remote string, tolerance ...time.Duration) (authed bool,
+		pubkey []byte)
 	AuthRequired() bool
 	CheckOwnerLists(c context.T)
 	Configuration() config.C

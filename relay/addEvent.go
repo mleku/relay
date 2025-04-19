@@ -21,7 +21,7 @@ var (
 )
 
 func (s *Server) addEvent(c context.T, ev *event.T,
-	authedPubkey []byte) (accepted bool, message []byte) {
+	authedPubkey []byte, remote string) (accepted bool, message []byte) {
 
 	if ev == nil {
 		return false, normalize.Invalid.F("empty event")
