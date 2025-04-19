@@ -23,7 +23,7 @@ func (a *A) HandleClose(req []byte,
 		log.T.F("%s close has no <id>", remote)
 		return []byte("CLOSE has no <id>")
 	}
-	log.T.F("%s cancelling subscription %s", env.ID.String())
+	log.T.F("%s cancelling subscription %s", remote, env.ID.String())
 	publish.P.Receive(&W{
 		Cancel:   true,
 		Listener: a.Listener,

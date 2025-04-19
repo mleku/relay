@@ -12,7 +12,6 @@ import (
 	"relay.mleku.dev/log"
 	"relay.mleku.dev/relay/config"
 	"relay.mleku.dev/relay/helpers"
-	"relay.mleku.dev/store"
 )
 
 // ConfigurationSetInput is the parameters for HTTP API method to set Configuration.
@@ -79,18 +78,7 @@ func (x *Operations) RegisterConfigurationSet(api huma.API) {
 				}
 			}
 		}
-		sto := x.Storage()
-		if c, ok := sto.(store.Configurationer); ok {
-			x.SetConfiguration(input.Body)
-			if err = c.SetConfiguration(input.Body); chk.E(err) {
-				return
-			}
-			var cfg *config.C
-			if cfg, err = c.GetConfiguration(); chk.E(err) {
-				return
-			}
-			x.Server.SetConfiguration(cfg)
-		}
+		x.SetConfiguration(input.Body)
 		return
 	})
 }

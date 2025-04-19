@@ -27,6 +27,7 @@ type I interface {
 	Importer
 	Exporter
 	Syncer
+	LogLeveler
 }
 
 type Initer interface {
@@ -104,4 +105,8 @@ type Syncer interface {
 type Configurationer interface {
 	GetConfiguration() (c *config.C, err error)
 	SetConfiguration(c *config.C) (err error)
+}
+
+type LogLeveler interface {
+	SetLogLevel(level string)
 }

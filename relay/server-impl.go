@@ -10,6 +10,7 @@ import (
 	"relay.mleku.dev/log"
 	"relay.mleku.dev/relay/config"
 	"relay.mleku.dev/relay/interfaces"
+	"relay.mleku.dev/signer"
 	"relay.mleku.dev/store"
 )
 
@@ -35,8 +36,11 @@ func (s *Server) SetConfiguration(cfg *config.C) {
 	s.configurationMx.Lock()
 	s.configuration = cfg
 	s.configured = true
-	chk.E(s.UpdateConfiguration())
 	s.configurationMx.Unlock()
+	if c, ok := s.Store.(store.Configurationer); ok {
+		chk.E(c.SetConfiguration(cfg))
+		chk.E(s.UpdateConfiguration())
+	}
 }
 
 func (s *Server) AddEvent(
@@ -65,6 +69,12 @@ func (s *Server) Context() context.T { return s.Ctx }
 
 func (s *Server) Owners() [][]byte { return s.owners }
 
+func (s *Server) SetOwners(owners [][]byte) {
+	s.Lock()
+	defer s.Unlock()
+	s.owners = owners
+}
+
 func (s *Server) AuthRequired() bool {
 	s.configurationMx.Lock()
 	defer s.configurationMx.Unlock()
@@ -76,6 +86,12 @@ func (s *Server) OwnersFollowed(pubkey string) (ok bool) {
 	defer s.Unlock()
 	_, ok = s.ownersFollowed[pubkey]
 	return
+}
+
+func (s *Server) SetAdmins(admins []signer.I) {
+	s.Lock()
+	defer s.Unlock()
+	s.admins = admins
 }
 
 var _ interfaces.Server = &Server{}

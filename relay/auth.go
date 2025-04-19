@@ -16,6 +16,8 @@ import (
 
 func (s *Server) adminAuth(r *http.Request, remote string,
 	tolerance ...time.Duration) (authed bool, pubkey []byte) {
+	s.Lock()
+	defer s.Unlock()
 	if len(s.admins) == 0 {
 		return
 	}

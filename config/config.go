@@ -12,7 +12,6 @@ import (
 	"relay.mleku.dev/chk"
 	"relay.mleku.dev/config/keyvalue"
 	"relay.mleku.dev/log"
-	"relay.mleku.dev/lol"
 	"relay.mleku.dev/version"
 )
 
@@ -20,14 +19,11 @@ import (
 // configurations should generally be stored in the database, where APIs make them easy to
 // modify.
 type C struct {
-	AppName      string `env:"APP_NAME" default:"relay"`
-	Listen       string `env:"LISTEN" default:"0.0.0.0" usage:"network listen address"`
-	Port         int    `env:"PORT" default:"3334" usage:"port to listen on"` // PORT is used by heroku
-	Pprof        bool   `env:"PPROF" default:"false" usage:"enable pprof on 127.0.0.1:6060"`
-	MemLimit     int64  `env:"MEM_LIMIT" default:"250000000" usage:"set memory limit, default is 250Mb"`
-	LogLevel     string `env:"LOG_LEVEL" default:"trace" usage:"log level"`
-	DBLogLevel   string `env:"DB_LOG_LEVEL" default:"info" usage:"database log level"`
-	LogTimestamp bool   `env:"LOG_TIMESTAMP" default:"false" usage:"log timestamp"`
+	AppName  string `env:"APP_NAME" default:"relay"`
+	Listen   string `env:"LISTEN" default:"0.0.0.0" usage:"network listen address"`
+	Port     int    `env:"PORT" default:"3334" usage:"port to listen on"` // PORT is used by heroku
+	Pprof    bool   `env:"PPROF" default:"false" usage:"enable pprof on 127.0.0.1:6060"`
+	MemLimit int64  `env:"MEM_LIMIT" default:"250000000" usage:"set memory limit, default is 250Mb"`
 }
 
 func New() (c *C) {
@@ -66,8 +62,6 @@ commands:
 		os.Exit(0)
 	}
 	// now we have the config, set up all the things here rather than somewhere unrelated.
-	lol.SetLogLevel(c.LogLevel)
-	lol.NoTimeStamp.Store(!c.LogTimestamp)
 	if c.Pprof {
 		defer profile.Start(profile.MemProfile).Stop()
 		go func() {

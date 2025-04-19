@@ -104,15 +104,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	// standard nostr protocol only governs the "root" path of the relay and websockets
-	// if r.URL.Path == "/" && r.Header.Get("Accept") == "application/nostr+json" {
-	// 	s.handleRelayInfo(w, r)
-	// 	return
-	// }
-	// if r.URL.Path == "/" && r.Header.Get("Upgrade") == "websocket" {
-	// 	(&socketapi.A{Server: s}).ServeHTTP(w, r)
-	// 	return
-	// }
 	log.I.F("http request: %s from %s", r.URL.String(), helpers.GetRemoteFromReq(r))
 	s.Mux.ServeHTTP(w, r)
 }

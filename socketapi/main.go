@@ -53,28 +53,6 @@ func (a *A) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.StatusServiceUnavailable)
 		return
 	}
-	allowList := a.Server.Configuration().AllowList
-	if len(allowList) > 0 {
-		var allowed bool
-		for _, a := range allowList {
-			if strings.HasPrefix(remote, a) {
-				log.T.F("%s on allow list", remote)
-				allowed = true
-				break
-			}
-		}
-		if !allowed {
-			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
-			return
-		}
-	}
-	for _, a := range a.Server.Configuration().BlockList {
-		if strings.HasPrefix(remote, a) {
-			log.T.F("blocked request from %s", remote)
-			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
-			return
-		}
-	}
 	if r.Header.Get("Upgrade") != "websocket" {
 		log.T.F("serving relay info %s", remote)
 		a.Server.HandleRelayInfo(w, r)

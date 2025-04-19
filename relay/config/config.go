@@ -8,4 +8,7 @@ type C struct {
 	Owners         []string `json:"owners" doc:"list of owner npubs whose follow lists set the whitelisted users and enables auth implicitly for all writes"`
 	AuthRequired   bool     `json:"auth_required" doc:"authentication is required for read and write" default:"false"`
 	PublicReadable bool     `json:"public_readable" doc:"authentication is relaxed for read except privileged events" default:"false"`
+	LogLevel       string   `json:"log_level" doc:"Log level" doc:"info"`
+	DBLogLevel     string   `json:"db_log_level" default:"info" doc:"database log level"`
+	LogTimestamp   bool     `json:"log_timestamp" default:"false" doc:"print log timestamp"`
 }

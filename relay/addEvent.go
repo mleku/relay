@@ -60,6 +60,6 @@ func (s *Server) addEvent(c context.T, ev *event.T,
 	// notify subscribers
 	publish.P.Deliver(authRequired, s.PublicReadable(), ev)
 	accepted = true
-	log.I.F("event id %0x stored", ev.Id)
+	log.T.F("event id %0x stored", ev.Id)
 	return
 }

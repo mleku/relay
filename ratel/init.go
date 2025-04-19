@@ -10,6 +10,7 @@ import (
 
 	"relay.mleku.dev/chk"
 	"relay.mleku.dev/log"
+	"relay.mleku.dev/lol"
 	"relay.mleku.dev/ratel/prefixes"
 	"relay.mleku.dev/units"
 )
@@ -46,6 +47,11 @@ func (r *T) Init(path string) (err error) {
 	}
 	return nil
 
+}
+
+func (r *T) SetLogLevel(level string) {
+	log.I.F("setting db log level %s", level)
+	r.Logger.SetLogLevel(lol.GetLogLevel(level))
 }
 
 const Version = 1

@@ -32,6 +32,7 @@ type Server interface {
 	PublicReadable() bool
 	ServiceURL(req *http.Request) (s string)
 	SetConfiguration(*config.C)
+	UpdateConfiguration() (err error)
 	Shutdown()
 	Storage() store.I
 	Unlock()

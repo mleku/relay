@@ -143,7 +143,7 @@ func init() {
 
 // SetLoggers configures a log level.
 func SetLoggers(level int) {
-	Main.Log.T.F("log level %s", LevelSpecs[level].Colorizer(LevelNames[level]))
+	Main.Log.W.F("setting log level %s", LevelSpecs[level].Colorizer(LevelNames[level]))
 	Level.Store(int32(level))
 }
 

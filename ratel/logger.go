@@ -52,9 +52,8 @@ func (l *logger) Warningf(s string, i ...interface{}) {
 
 // Infof is a log printer for this level of message.
 func (l *logger) Infof(s string, i ...interface{}) {
-	if l.Level.Load() >= lol.Debug {
+	if l.Level.Load() >= lol.Info {
 		s = l.Label + ": " + s
-		fmt.Println(s)
 		txt := fmt.Sprintf(s, i...)
 		l.Log.I.F(strings.TrimSpace(txt))
 	}
